@@ -9,10 +9,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class ProductShowReqDTO {
+public class ProductPaginationReqDTO {
 
     private Long productPerPage;
     private String type;
     private String keySearch;
-    
+
 }

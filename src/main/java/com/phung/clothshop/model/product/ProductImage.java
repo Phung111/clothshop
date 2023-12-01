@@ -49,7 +49,7 @@ public class ProductImage {
     @Column
     private Boolean deleted;
 
-    public ProductImageDTO toProductImageDTO(Product product) {
+    public ProductImageDTO toProductImageDTO() {
         return new ProductImageDTO()
                 .setId(id)
                 .setProductId(product.getId())

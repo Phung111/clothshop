@@ -31,7 +31,7 @@ import com.phung.clothshop.utils.customAnnotation.EnumValidCheck;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ProductCreateReqDTO implements Validator {
+public class ProductCreateReqDTO {
 
     private Long id;
 
@@ -89,38 +89,6 @@ public class ProductCreateReqDTO implements Validator {
     private String eShipsFrom;
 
     private MultipartFile[] multipartFiles;
-
-    @Override
-    public boolean supports(Class<?> clazz) {
-        throw new UnsupportedOperationException("Unimplemented method 'supports'");
-    }
-
-    @Override
-    public void validate(Object target, Errors errors) {
-        MultipartFile[] multipartFiles = (MultipartFile[]) target;
-
-        for (int i = 0; i < multipartFiles.length; i++) {
-            MultipartFile multipartFile = multipartFiles[i];
-            if (multipartFile != null && !multipartFile.isEmpty()) {
-                // Kiểm tra kích thước file
-                if (multipartFile.getSize() > 512000) {
-                    String message = "File size at index " + i + " must be less than 500 KB";
-                    errors.rejectValue("multipartFiles[" + i + "]", "file.size", message);
-                }
-
-                // Kiểm tra loại file
-                String originalFilename = multipartFile.getOriginalFilename();
-                String fileExtension = originalFilename != null
-                        ? originalFilename.substring(originalFilename.lastIndexOf(".") + 1)
-                        : null;
-                List<String> allowedExtensions = Arrays.asList("jpg", "jpeg", "png", "gif");
-                if (fileExtension == null || !allowedExtensions.contains(fileExtension.toLowerCase())) {
-                    String message = "Invalid file type at index " + i + ". Allowed types are: jpg, jpeg, png, gif";
-                    errors.rejectValue("multipartFiles[" + i + "]", "file.type", message);
-                }
-            }
-        }
-    }
 
     public Product toProduct() {
 

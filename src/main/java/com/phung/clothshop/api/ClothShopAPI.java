@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.phung.clothshop.model.dto.ProductShowReqDTO;
+import com.phung.clothshop.model.dto.ProductPaginationReqDTO;
 
 @RestController
 @RequestMapping("/api/clothshop")
@@ -18,7 +18,7 @@ public class ClothShopAPI {
 
     @GetMapping("/page={page}")
     public ResponseEntity<?> getProducts(
-            @RequestBody ProductShowReqDTO productShowReqDTO,
+            @RequestBody ProductPaginationReqDTO productShowReqDTO,
             @PathVariable Long page,
             @PageableDefault(sort = "id", direction = Sort.Direction.DESC, size = 10) Pageable pageable) {
         return new ResponseEntity<>(null);

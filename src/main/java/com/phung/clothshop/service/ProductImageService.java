@@ -1,5 +1,6 @@
 package com.phung.clothshop.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -12,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.phung.clothshop.CloudinaryUploader;
 import com.phung.clothshop.model.dto.ProductImageDTO;
+import com.phung.clothshop.model.dto.ProductUpdateReqDTO;
 import com.phung.clothshop.model.product.Product;
 import com.phung.clothshop.model.product.ProductImage;
 import com.phung.clothshop.repository.ProductImageRepository;
@@ -60,8 +62,8 @@ public class ProductImageService implements IProductImageService {
 
     @Override
     public void delete(ProductImage e) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        e.setDeleted(true);
+        productImageRepository.save(e);
     }
 
     @Override
@@ -90,17 +92,19 @@ public class ProductImageService implements IProductImageService {
 
         productImage = productImageRepository.save(productImage);
 
-        ProductImageDTO productImageDTO = productImage.toProductImageDTO(product);
+        ProductImageDTO productImageDTO = productImage.toProductImageDTO();
 
         return productImageDTO;
     }
 
     @Override
     public ProductImageDTO setDefaultAndSaveImage(Product product) {
+
         String cloudId = cloudinaryDefaultFolder + "/" + cloudinaryDefaultFileName;
         String fileUrl = cloudinaryServerName + "/" + cloudinaryName + "/image/upload/" + cloudId;
 
         ProductImage productImage = new ProductImage();
+        productImage.setDeleted(false);
         productImage.setProduct(product);
         productImage.setFileName(cloudinaryDefaultFileName);
         productImage.setFileFolder(cloudinaryDefaultFolder);
@@ -110,9 +114,19 @@ public class ProductImageService implements IProductImageService {
 
         productImage = productImageRepository.save(productImage);
 
-        ProductImageDTO productImageDTO = productImage.toProductImageDTO(product);
+        ProductImageDTO productImageDTO = productImage.toProductImageDTO();
 
         return productImageDTO;
+    }
+
+    @Override
+    public void deleteSelectImages(List<Long> idImageDeletes, List<ProductImage> productImages) {
+
+        for (ProductImage oldImage : productImages) {
+            if (idImageDeletes.size() > 0 && idImageDeletes.contains(oldImage.getId())) {
+                productImageRepository.delete(oldImage);
+            }
+        }
     }
 
 }

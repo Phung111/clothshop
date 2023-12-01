@@ -36,60 +36,64 @@ public class ProductUpdateReqDTO implements Validator {
 
     private Long id;
 
-    @NotBlank(message = "name product can not blank")
+    // @NotBlank(message = "name product can not blank")
     private String name;
 
-    @NotBlank(message = "price can not blank")
+    // @NotBlank(message = "price can not blank")
     @Pattern(regexp = "^(0|[1-9][0-9]*)$", message = "price product is not valid number")
     @Pattern(regexp = "^(1000|[1-9]\\d{3,6})$", message = "price must be between 1.000 and 10.000.000")
     private String price;
 
-    @NotBlank(message = "quantity can not blank")
+    // @NotBlank(message = "quantity can not blank")
     @Pattern(regexp = "^(0|[1-9][0-9]*)$", message = "quantity product is not valid number")
     @Pattern(regexp = "^(?:[1-9]|[1-9]\\d{1,2}|1000)$", message = "quantity must be between 1 and 1.000")
     private String quantity;
 
+    private Long sold;
+
+    private Boolean deleted;
+
     private String decription;
 
-    @NotBlank(message = "category can not blank")
+    // @NotBlank(message = "category can not blank")
     @EnumValidCheck(enumClass = ECategory.class, message = "Invalid category value")
     private String eCategory;
 
-    @NotBlank(message = "color can not blank")
+    // @NotBlank(message = "color can not blank")
     @EnumValidCheck(enumClass = EColor.class, message = "Invalid color value")
     private String eColor;
 
-    @NotBlank(message = "size can not blank")
+    // @NotBlank(message = "size can not blank")
     @EnumValidCheck(enumClass = ESize.class, message = "Invalid size value")
     private String eSize;
 
-    @NotBlank(message = "top length can not blank")
+    // @NotBlank(message = "top length can not blank")
     @EnumValidCheck(enumClass = EProductStatus.class, message = "Invalid top length value")
-    private String eProductStatus = EProductStatus.AVAIABLE.toString();
+    private String eProductStatus;
 
-    @NotBlank(message = "top length can not blank")
+    // @NotBlank(message = "top length can not blank")
     @EnumValidCheck(enumClass = ETopLength.class, message = "Invalid top length value")
     private String eTopLength;
 
-    @NotBlank(message = "country can not blank")
+    // @NotBlank(message = "country can not blank")
     @EnumValidCheck(enumClass = ECountry.class, message = "Invalid country value")
     private String eCountry;
 
-    @NotBlank(message = "season can not blank")
+    // @NotBlank(message = "season can not blank")
     @EnumValidCheck(enumClass = ESeason.class, message = "Invalid season value")
     private String eSeason;
 
-    @NotBlank(message = "style can not blank")
+    // @NotBlank(message = "style can not blank")
     @EnumValidCheck(enumClass = EStyle.class, message = "Invalid style value")
     private String eStyle;
 
-    @NotBlank(message = "ships from can not blank")
+    // @NotBlank(message = "ships from can not blank")
     @EnumValidCheck(enumClass = EShipsFrom.class, message = "Invalid ships from value")
     private String eShipsFrom;
 
     private MultipartFile[] multipartFiles;
 
-    private List<Long> idImages;
+    private List<Long> idImageDeletes;
 
     @Override
     public boolean supports(Class<?> clazz) {

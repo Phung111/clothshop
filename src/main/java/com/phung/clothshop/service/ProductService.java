@@ -17,7 +17,7 @@ import com.phung.clothshop.CloudinaryUploader;
 import com.phung.clothshop.model.dto.ProductCreateReqDTO;
 import com.phung.clothshop.model.dto.ProductImageDTO;
 import com.phung.clothshop.model.dto.ProductResDTO;
-import com.phung.clothshop.model.dto.ProductShowReqDTO;
+import com.phung.clothshop.model.dto.ProductPaginationReqDTO;
 import com.phung.clothshop.model.dto.ProductShowResDTO;
 import com.phung.clothshop.model.dto.ProductUpdateReqDTO;
 import com.phung.clothshop.model.product.Product;
@@ -33,6 +33,9 @@ public class ProductService implements IProductService {
 
     @Autowired
     private ProductImageService productImageService;
+
+    @Value("${application.cloudinary.default-file-name}")
+    private String cloudinaryDefaultFileName;
 
     @Override
     public List<Product> findAll() {
@@ -56,7 +59,8 @@ public class ProductService implements IProductService {
 
     @Override
     public void delete(Product e) {
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+        e.setDeleted(true);
+        productRepository.save(e);
     }
 
     @Override
@@ -65,7 +69,7 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public Page<ProductShowResDTO> findAll(ProductShowReqDTO productShowReqDTO, Pageable pageable) {
+    public Page<ProductResDTO> getAllPagination(ProductPaginationReqDTO productShowReqDTO, Pageable pageable) {
         throw new UnsupportedOperationException("Unimplemented method 'findAll'");
     }
 
@@ -78,14 +82,11 @@ public class ProductService implements IProductService {
     public ProductResDTO createWithImage(ProductCreateReqDTO productCreateReqDTO, MultipartFile[] multipartFiles) {
         Product productCreate = productRepository.save(productCreateReqDTO.toProduct());
 
-        List<ProductImageDTO> imageDTOs = new ArrayList<>();
-
         for (MultipartFile multipartFile : multipartFiles) {
-            ProductImageDTO productImageDTO = productImageService.uploadAndSaveImage(productCreate, multipartFile);
-            imageDTOs.add(productImageDTO);
+            productImageService.uploadAndSaveImage(productCreate, multipartFile);
         }
 
-        ProductResDTO productResDTO = productCreate.toProductResDTO(imageDTOs);
+        ProductResDTO productResDTO = productCreate.toProductResDTO();
 
         return productResDTO;
     }
@@ -94,38 +95,41 @@ public class ProductService implements IProductService {
     public ProductResDTO createNoImage(ProductCreateReqDTO productCreateReqDTO) {
         Product productCreate = productRepository.save(productCreateReqDTO.toProduct());
 
-        List<ProductImageDTO> imageDTOs = new ArrayList<>();
+        productImageService.setDefaultAndSaveImage(productCreate);
 
-        ProductImageDTO productImageDTO = productImageService.setDefaultAndSaveImage(productCreate);
-
-        imageDTOs.add(productImageDTO);
-
-        ProductResDTO productResDTO = productCreate.toProductResDTO(imageDTOs);
+        ProductResDTO productResDTO = productCreate.toProductResDTO();
 
         return productResDTO;
     }
 
     @Override
-    public ProductResDTO updateWithImage(ProductUpdateReqDTO productUpdateReqDTO, MultipartFile[] multipartFiles) {
-        Product productUpdate = productRepository.save(productUpdateReqDTO.toProduct());
+    public ProductResDTO updateWithImage(List<Long> idImageDeletes, Product productUpdate,
+            MultipartFile[] multipartFiles) {
 
-        List<ProductImageDTO> imageDTOs = new ArrayList<>();
+        productRepository.save(productUpdate);
 
-        ProductResDTO productResDTO = productUpdate.toProductResDTO(imageDTOs);
-        return productResDTO;
-    }
+        productImageService.deleteSelectImages(idImageDeletes, productUpdate.getImages());
 
-    @Override
-    public ProductResDTO updateNoImage(ProductUpdateReqDTO productUpdateReqDTO) {
-        Product productUpdate = productRepository.save(productUpdateReqDTO.toProduct());
-
-        List<ProductImage> images = productUpdate.getImages();
-        List<ProductImageDTO> imageDTOs = new ArrayList<>();
-        for (ProductImage productImage : images) {
-            imageDTOs.add(productImage.toProductImageDTO(productUpdate));
+        for (MultipartFile multipartFile : multipartFiles) {
+            productImageService.uploadAndSaveImage(productUpdate, multipartFile);
         }
 
-        ProductResDTO productResDTO = productUpdate.toProductResDTO(imageDTOs);
+        Optional<Product> producOptional = productRepository.findById(productUpdate.getId());
+        Product productUpdateRes = producOptional.get();
+        ProductResDTO productResDTO = productUpdateRes.toProductResDTO();
+
+        return productResDTO;
+    }
+
+    @Override
+    public ProductResDTO updateNoImage(List<Long> idImageDeletes, Product productUpdate) {
+
+        Product productUpdateRes = productRepository.save(productUpdate);
+
+        productImageService.deleteSelectImages(idImageDeletes, productUpdate.getImages());
+
+        ProductResDTO productResDTO = productUpdateRes.toProductResDTO();
+
         return productResDTO;
     }
 

@@ -1,6 +1,9 @@
 package com.phung.clothshop.model.product;
 
 import javax.persistence.*;
+
+import org.hibernate.annotations.DynamicUpdate;
+
 import lombok.*;
 
 import com.phung.clothshop.model.dto.ProductImageDTO;
@@ -22,7 +25,7 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column()
     private String name;
 
     @Column
@@ -60,10 +63,16 @@ public class Product {
     @JoinColumn(name = "product_detail_id", referencedColumnName = "id", nullable = false)
     private ProductDetail productDetail;
 
-    @OneToMany(mappedBy = "product")
-    private List<ProductImage> images = new ArrayList<>();
+    @OneToMany(mappedBy = "product", targetEntity = ProductImage.class, fetch = FetchType.EAGER)
+    private List<ProductImage> images;
 
-    public ProductResDTO toProductResDTO(List<ProductImageDTO> images) {
+    public ProductResDTO toProductResDTO() {
+
+        List<ProductImageDTO> productImageDTOs = new ArrayList<>();
+        for (ProductImage productImage : images) {
+            productImageDTOs.add(productImage.toProductImageDTO());
+        }
+
         return new ProductResDTO()
                 .setId(id)
                 .setName(name)
@@ -77,7 +86,7 @@ public class Product {
                 .setESize(eSize)
                 .setEProductStatus(eProductStatus)
                 .setProductDetail(productDetail)
-                .setImages(images);
+                .setImages(productImageDTOs);
 
     }
 }
