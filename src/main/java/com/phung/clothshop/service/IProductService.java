@@ -20,14 +20,6 @@ public interface IProductService extends IGeneralService<Product, Long> {
 
     Page<ProductResDTO> getAllPagination(ProductPaginationReqDTO productShowReqDTO, Pageable pageable);
 
-    ProductResDTO createWithImage(ProductCreateReqDTO productCreateReqDTO, MultipartFile[] multipartFiles);
-
-    ProductResDTO createNoImage(ProductCreateReqDTO productCreateReqDTO);
-
-    ProductResDTO updateWithImage(List<Long> idImageDeletes, Product product, MultipartFile[] multipartFiles);
-
-    ProductResDTO updateNoImage(List<Long> idImageDeletes, Product product);
-
     boolean existsByName(String name);
 
 }

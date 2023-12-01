@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.phung.clothshop.model.product.Product;
+import com.phung.clothshop.model.product.ProductImage;
 import com.phung.clothshop.ValidateMultipartFiles;
 import com.phung.clothshop.model.dto.ProductCreateReqDTO;
 import com.phung.clothshop.model.dto.ProductResDTO;
@@ -38,9 +39,6 @@ public class ProductAPI {
 
     @Autowired
     private IProductService iProductService;
-
-    @Autowired
-    private IProductDetailService iProductDetailService;
 
     @Autowired
     private IProductImageService iProductImageService;
@@ -82,23 +80,30 @@ public class ProductAPI {
             @ModelAttribute @Validated ProductCreateReqDTO productCreateReqDTO,
             BindingResult bindingResult) {
 
+        // Kiểm tra lỗi ảnh và bắn tất cả lỗi
         validateMultipartFiles.validateMultipartFiles(productCreateReqDTO.getMultipartFiles(), bindingResult);
 
         if (bindingResult.hasErrors()) {
             return appUtils.mapErrorToResponse(bindingResult);
         }
 
-        ProductResDTO productResDTO = new ProductResDTO();
+        // Lưu sản phẩm
+        Product productSave = iProductService.save(productCreateReqDTO.toProduct());
 
-        Product productCreateSave = iProductService.save(productCreateReqDTO.toProduct());
-
+        // Lưu ảnh
         MultipartFile[] multipartFiles = productCreateReqDTO.getMultipartFiles();
-
         if (multipartFiles != null && multipartFiles.length > 0 && !multipartFiles[0].getOriginalFilename().isEmpty()) {
-            productResDTO = iProductService.createWithImage(productCreateReqDTO, multipartFiles);
+            for (MultipartFile multipartFile : multipartFiles) {
+                iProductImageService.uploadAndSaveImage(productSave, multipartFile);
+            }
         } else {
-            productResDTO = iProductService.createNoImage(productCreateReqDTO);
+            iProductImageService.setDefaultAndSaveImage(productSave);
         }
+
+        // Trả về sản phẩm
+        Optional<Product> productOptional = iProductService.findById(productSave.getId());
+        Product product = productOptional.get();
+        ProductResDTO productResDTO = product.toProductResDTO();
 
         return new ResponseEntity<>(productResDTO, HttpStatus.CREATED);
     }
@@ -125,9 +130,7 @@ public class ProductAPI {
             BindingResult bindingResult,
             @PathVariable Long productId) {
 
-        validateMultipartFiles.validateMultipartFiles(productUpdateReqDTO.getMultipartFiles(),
-                bindingResult);
-
+        // Ánh xạ các trường DTO vào entity trừ null
         Optional<Product> producOptional = iProductService.findById(productId);
         Product productUpdate = producOptional.get();
 
@@ -135,6 +138,9 @@ public class ProductAPI {
         modelMapper.getConfiguration().setSkipNullEnabled(true);
         modelMapper.map(productUpdateReqDTO, productUpdate);
 
+        // Kiểm tra lỗi ảnh và bắn tất cả lỗi
+        validateMultipartFiles.validateMultipartFiles(productUpdateReqDTO.getMultipartFiles(),
+                bindingResult);
         if (!producOptional.isPresent()) {
             bindingResult.rejectValue("productId", "notFound", "Product not found with ID: " + productId);
         }
@@ -143,19 +149,25 @@ public class ProductAPI {
             return appUtils.mapErrorToResponse(bindingResult);
         }
 
-        productUpdateReqDTO.setId(productId);
+        // Lưu sản phẩm
+        Product productUpdateNew = iProductService.save(productUpdate);
 
-        ProductResDTO productResDTO = new ProductResDTO();
-
-        MultipartFile[] multipartFiles = productUpdateReqDTO.getMultipartFiles();
-
+        // Xoá Ảnh
         List<Long> idImageDeletes = productUpdateReqDTO.getIdImageDeletes();
+        if (idImageDeletes.size() > 0) {
+            List<ProductImage> productImages = productUpdateNew.getImages();
+            iProductImageService.deleteSelectImages(idImageDeletes, productImages);
+        }
 
+        ProductResDTO productResDTO = productUpdateNew.toProductResDTO();
+
+        // Lưu ảnh
+        MultipartFile[] multipartFiles = productUpdateReqDTO.getMultipartFiles();
         if (multipartFiles != null && multipartFiles.length > 0 &&
                 !multipartFiles[0].getOriginalFilename().isEmpty()) {
-            productResDTO = iProductService.updateWithImage(idImageDeletes, productUpdate, multipartFiles);
-        } else {
-            productResDTO = iProductService.updateNoImage(idImageDeletes, productUpdate);
+            Optional<Product> productOptional = iProductService.findById(productUpdateNew.getId());
+            Product product = productOptional.get();
+            productResDTO = product.toProductResDTO();
         }
 
         return new ResponseEntity<>(productResDTO, HttpStatus.CREATED);
