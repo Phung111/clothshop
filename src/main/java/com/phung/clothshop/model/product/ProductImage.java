@@ -5,7 +5,7 @@ import javax.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Where;
 
-import com.phung.clothshop.model.dto.ProductImageDTO;
+import com.phung.clothshop.model.dto.product.ProductImageDTO;
 
 import lombok.*;
 

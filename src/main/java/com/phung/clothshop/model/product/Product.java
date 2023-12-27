@@ -1,13 +1,11 @@
 package com.phung.clothshop.model.product;
 
 import javax.persistence.*;
-
-import org.hibernate.annotations.DynamicUpdate;
-
 import lombok.*;
 
-import com.phung.clothshop.model.dto.ProductImageDTO;
-import com.phung.clothshop.model.dto.ProductResDTO;
+import com.phung.clothshop.model.BaseEntity;
+import com.phung.clothshop.model.dto.product.ProductImageDTO;
+import com.phung.clothshop.model.dto.product.ProductResDTO;
 import com.phung.clothshop.model.productDetail.ProductDetail;
 
 import java.util.ArrayList;
@@ -19,13 +17,13 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "products")
-public class Product {
+public class Product extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column()
+    @Column
     private String name;
 
     @Column
@@ -36,9 +34,6 @@ public class Product {
 
     @Column
     private Long sold;
-
-    @Column
-    private Boolean deleted;
 
     @Column
     private String decription;
@@ -79,14 +74,21 @@ public class Product {
                 .setPrice(price)
                 .setQuantity(quantity)
                 .setSold(sold)
-                .setDeleted(deleted)
                 .setDecription(decription)
                 .setECategory(eCategory)
                 .setEColor(eColor)
                 .setESize(eSize)
                 .setEProductStatus(eProductStatus)
                 .setProductDetail(productDetail)
-                .setImages(productImageDTOs);
+                .setImages(productImageDTOs)
+                .setDeleted(getDeleted())
+                .setCreatedAt(getCreatedAt())
+                .setUpdatedAt(getUpdatedAt());
 
+    }
+
+    public String toVariations() {
+        String variations = eCategory.toString() + "," + eColor.toString() + "," + eSize.toString();
+        return variations;
     }
 }
