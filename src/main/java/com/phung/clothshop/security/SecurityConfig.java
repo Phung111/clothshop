@@ -69,14 +69,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // thực
         http.authorizeRequests()
                 .antMatchers(
-                        "/api/auth/login",
-                        "/api/auth/forget-password",
-                        "/api/users/update-password/*",
-                        "/api/auth/register",
-                        "/api/auth/register",
-                        "/api/customers/**")
+                        "/api/auth/**",
+                        "/api/products/**")
                 .permitAll()
-                .anyRequest().authenticated();
+                .antMatchers(
+                        "/v3/api-docs",
+                        "/swagger-resources/configuration/ui",
+                        "/configuration/ui",
+                        "/swagger-resources",
+                        "/swagger-resources/configuration/security",
+                        "/configuration/security",
+                        "/swagger-ui/**")
+                .permitAll();
+        // .anyRequest().authenticated();
 
         http.formLogin()
                 .loginPage("/login") // Đường dẫn tới trang đăng nhập tùy chỉnh

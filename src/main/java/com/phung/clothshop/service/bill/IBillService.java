@@ -1,6 +1,8 @@
 package com.phung.clothshop.service.bill;
 
-import com.phung.clothshop.model.order.Bill;
+import java.util.List;
+
+import com.phung.clothshop.domain.entity.order.Bill;
 import com.phung.clothshop.service.IGeneralService;
 
 public interface IBillService extends IGeneralService<Bill, Long> {

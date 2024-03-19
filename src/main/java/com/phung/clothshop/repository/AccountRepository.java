@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Repository;
 
-import com.phung.clothshop.model.account.Account;
+import com.phung.clothshop.domain.entity.account.Account;
 
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long>,

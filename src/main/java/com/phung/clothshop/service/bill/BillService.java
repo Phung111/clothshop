@@ -7,8 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.phung.clothshop.model.order.Bill;
+import com.phung.clothshop.domain.entity.order.Bill;
 import com.phung.clothshop.repository.BillRepository;
+import com.phung.clothshop.repository.CartItemRepository;
+import com.phung.clothshop.repository.CartRepository;
+import com.phung.clothshop.repository.CustomerRepository;
+import com.phung.clothshop.repository.OrderItemRepository;
+import com.phung.clothshop.repository.OrderRepository;
+import com.phung.clothshop.repository.ProductRepository;
 
 @Service
 @Transactional

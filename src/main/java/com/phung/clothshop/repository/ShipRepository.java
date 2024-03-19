@@ -11,9 +11,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
-import com.phung.clothshop.model.dto.product.ProductPageReqDTO;
-import com.phung.clothshop.model.order.Ship;
-import com.phung.clothshop.model.product.Product;
+import com.phung.clothshop.domain.dto.product.ProductPageReqDTO;
+import com.phung.clothshop.domain.entity.order.Ship;
+import com.phung.clothshop.domain.entity.product.Product;
 
 public interface ShipRepository extends JpaRepository<Ship, Long>,
         JpaSpecificationExecutor<Ship> {

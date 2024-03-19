@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.phung.clothshop.model.order.CartItem;
-import com.phung.clothshop.model.product.Product;
+import com.phung.clothshop.domain.entity.order.CartItem;
+import com.phung.clothshop.domain.entity.product.Product;
 import com.phung.clothshop.repository.CartItemRepository;
 
 @Service

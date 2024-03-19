@@ -1,5 +1,6 @@
 package com.phung.clothshop.service.account;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,9 +12,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.phung.clothshop.model.account.Account;
-import com.phung.clothshop.model.account.AccountPrinciple;
+import com.phung.clothshop.domain.dto.account.AccountRegisterReqDTO;
+import com.phung.clothshop.domain.entity.account.Account;
+import com.phung.clothshop.domain.entity.account.AccountPrinciple;
+import com.phung.clothshop.domain.entity.customer.Address;
+import com.phung.clothshop.domain.entity.customer.Customer;
+import com.phung.clothshop.domain.entity.order.Cart;
 import com.phung.clothshop.repository.AccountRepository;
+import com.phung.clothshop.service.address.IAddressService;
+import com.phung.clothshop.service.cart.ICartService;
+import com.phung.clothshop.service.customer.ICustomerService;
 
 @Service
 @Transactional
@@ -24,6 +32,18 @@ public class AccountService implements IAccountService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private ICartService iCartService;
+
+    @Autowired
+    private IAccountService iAccountService;
+
+    @Autowired
+    private ICustomerService iCustomerService;
+
+    @Autowired
+    private IAddressService iAddressService;
 
     @Override
     public List<Account> findAll() {
@@ -80,6 +100,22 @@ public class AccountService implements IAccountService {
     @Override
     public Account getByUsername(String username) {
         return accountRepository.getByUsername(username);
+    }
+
+    @Override
+    public void createAccountAndCustomer(AccountRegisterReqDTO accountRegisterReqDTO)
+            throws NumberFormatException, ParseException {
+        Account accountSave = iAccountService.save(accountRegisterReqDTO.toAccount());
+
+        Cart cart = new Cart();
+        Cart cartSave = iCartService.save(cart);
+
+        Customer customer = accountRegisterReqDTO.toCustomer(accountSave, cartSave);
+        Customer customerSave = iCustomerService.save(customer);
+
+        Address address = accountRegisterReqDTO.toAddress(customerSave);
+        iAddressService.save(address);
+
     }
 
 }

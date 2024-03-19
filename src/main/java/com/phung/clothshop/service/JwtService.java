@@ -17,9 +17,9 @@ import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 
-import com.phung.clothshop.model.account.Account;
-import com.phung.clothshop.model.account.AccountPrinciple;
-import com.phung.clothshop.model.customer.Customer;
+import com.phung.clothshop.domain.entity.account.Account;
+import com.phung.clothshop.domain.entity.account.AccountPrinciple;
+import com.phung.clothshop.domain.entity.customer.Customer;
 import com.phung.clothshop.service.account.IAccountService;
 import com.phung.clothshop.service.customer.ICustomerService;
 

@@ -8,7 +8,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.phung.clothshop.model.productDetail.ProductDetail;
+import com.phung.clothshop.domain.entity.productDetail.ProductDetail;
 import com.phung.clothshop.repository.ProductDetailRepository;
 
 @Service

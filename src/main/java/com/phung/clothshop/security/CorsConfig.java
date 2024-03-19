@@ -11,14 +11,9 @@ public class CorsConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
                 .allowedOrigins(
-                        "http://localhost:8080",
-                        "http://localhost:8081",
-                        "http://localhost:27002",
-                        "http://localhost:27003",
-                        "http://localhost:27004",
-                        "https://nhahangsentrang.top",
-                        "https://cp.nhahangsentrang.top",
-                        "https://socket.nhahangsentrang.top")
+                        "http://localhost:1001",
+                        "http://localhost:1002",
+                        "http://localhost:1003")
                 .allowedOriginPatterns("*")
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE")
                 .allowedHeaders("*")

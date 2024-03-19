@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.phung.clothshop.model.order.CartItem;
-import com.phung.clothshop.model.product.Product;
+import com.phung.clothshop.domain.entity.order.CartItem;
+import com.phung.clothshop.domain.entity.product.Product;
 
 public interface CartItemRepository extends JpaRepository<CartItem, Long>,
         JpaSpecificationExecutor<CartItem> {

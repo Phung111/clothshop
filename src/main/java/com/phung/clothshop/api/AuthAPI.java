@@ -1,15 +1,12 @@
 package com.phung.clothshop.api;
 
 import java.text.ParseException;
-import java.util.HashMap;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.catalina.authenticator.SpnegoAuthenticator.AuthenticateAction;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -18,28 +15,22 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.phung.clothshop.model.account.Account;
-import com.phung.clothshop.model.account.ERole;
-import com.phung.clothshop.model.customer.Customer;
-import com.phung.clothshop.model.dto.account.AccountLoginReqDTO;
-import com.phung.clothshop.model.dto.account.AccountRegisterReqDTO;
-import com.phung.clothshop.model.dto.account.AccountResDTO;
-import com.phung.clothshop.model.order.Cart;
+import com.phung.clothshop.domain.dto.account.AccountLoginReqDTO;
+import com.phung.clothshop.domain.dto.account.AccountRegisterReqDTO;
+import com.phung.clothshop.domain.entity.account.Account;
+import com.phung.clothshop.domain.entity.customer.Customer;
+import com.phung.clothshop.exceptions.CustomErrorException;
 import com.phung.clothshop.service.JwtService;
 import com.phung.clothshop.service.account.IAccountService;
 import com.phung.clothshop.service.cart.ICartService;
 import com.phung.clothshop.service.customer.ICustomerService;
 import com.phung.clothshop.utils.AppUtils;
-
-import io.jsonwebtoken.Jwts;
 
 @RestController
 @RequestMapping("api/auth")
@@ -110,9 +101,7 @@ public class AuthAPI {
                     .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
                     .body("Login successfully!");
         } catch (Exception e) {
-            e.printStackTrace();
-            bindingResult.rejectValue("account", "data", "Invalid data! Please check again!");
-            return new ResponseEntity<>(bindingResult, HttpStatus.UNAUTHORIZED);
+            throw new CustomErrorException(HttpStatus.BAD_REQUEST, "Invalid data!, please check the information again");
         }
 
     }
@@ -131,20 +120,16 @@ public class AuthAPI {
             return appUtils.mapErrorToResponse(bindingResult);
         }
 
-        // return new ResponseEntity<>("Account and customer saved successfully!",
-        // HttpStatus.CREATED);
+        try {
+            iAccountService.createAccountAndCustomer(accountRegisterReqDTO);
 
-        Account account = iAccountService.save(accountRegisterReqDTO.toAccount());
-        Cart cart = new Cart();
-        Cart cartSave = iCartService.save(cart);
+            return new ResponseEntity<>("Account and customer saved successfully!", HttpStatus.CREATED);
 
-        Customer customer = accountRegisterReqDTO.toCustomer();
-        customer.setAccount(account);
-        customer.setCart(cartSave);
+        } catch (Exception e) {
+            throw new CustomErrorException(HttpStatus.BAD_REQUEST,
+                    "Account information is not valid, please check the information again");
 
-        iCustomerService.save(customer);
-
-        return new ResponseEntity<>("Account and customer saved successfully!", HttpStatus.CREATED);
+        }
 
     }
 }

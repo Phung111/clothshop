@@ -8,9 +8,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.phung.clothshop.model.customer.Customer;
+import com.phung.clothshop.domain.entity.account.Account;
+import com.phung.clothshop.domain.entity.customer.Customer;
+
 import java.util.List;
-import com.phung.clothshop.model.account.Account;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long>,
