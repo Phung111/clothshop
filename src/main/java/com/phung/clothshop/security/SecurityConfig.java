@@ -63,52 +63,61 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().ignoringAntMatchers("/**").disable();
 
-        http.httpBasic().authenticationEntryPoint(restServicesEntryPoint());
-        // http.authorizeRequests()
-        // .anyRequest().permitAll() // Cho phép tất cả các request mà không cần xác
-        // thực
+        // http.httpBasic().authenticationEntryPoint(restServicesEntryPoint());
+
         http.authorizeRequests()
-                .antMatchers(
-                        "/api/auth/**",
-                        "/api/products/**")
-                .permitAll()
-                .antMatchers(
-                        "/v3/api-docs",
-                        "/swagger-resources/configuration/ui",
-                        "/configuration/ui",
-                        "/swagger-resources",
-                        "/swagger-resources/configuration/security",
-                        "/configuration/security",
-                        "/swagger-ui/**")
-                .permitAll();
+        .anyRequest().permitAll();
+         
+        // Cho phép tất cả các request mà không cần xác thực
+        
+        // http.authorizeRequests()
+        //         .antMatchers(
+        //                 "/api/auth/**",
+        //                 "/api/products/**")
+        //         .permitAll()
+        //         .antMatchers(
+        //                 "/v3/api-docs",
+        //                 "/swagger-resources/configuration/ui",
+        //                 "/configuration/ui",
+        //                 "/swagger-resources",
+        //                 "/swagger-resources/configuration/security",
+        //                 "/configuration/security",
+        //                 "/swagger-ui/**")
+        //         .permitAll();
+
         // .anyRequest().authenticated();
 
-        http.formLogin()
-                .loginPage("/login") // Đường dẫn tới trang đăng nhập tùy chỉnh
-                .loginProcessingUrl("/perform_login") // Đường dẫn xử lý quá trình đăng nhập khi form được gửi
-                .usernameParameter("username") // Tham số tên người dùng trong form đăng nhập
-                .passwordParameter("password") // Tham số mật khẩu trong form đăng nhập
-                .defaultSuccessUrl("/home") // URL mặc định sau khi đăng nhập thành công
-                .failureUrl("/login?error=true"); // URL khi đăng nhập thất bại
+        // http.formLogin()
+        //         .loginPage("/login") // Đường dẫn tới trang đăng nhập tùy chỉnh
+        //         .loginProcessingUrl("/perform_login") // Đường dẫn xử lý quá trình đăng nhập khi form được gửi
+        //         .usernameParameter("username") // Tham số tên người dùng trong form đăng nhập
+        //         .passwordParameter("password") // Tham số mật khẩu trong form đăng nhập
+        //         .defaultSuccessUrl("/home") // URL mặc định sau khi đăng nhập thành công
+        //         .failureUrl("/login?error=true"); // URL khi đăng nhập thất bại
 
-        http.logout()
-                .logoutUrl("/logout") // URL để đăng xuất
-                .logoutSuccessUrl("/login?logout") // URL sau khi đăng xuất thành công
-                .invalidateHttpSession(true) // Hủy phiên HttpSession
-                .deleteCookies("JWT") // Xóa cookie khi đăng xuất
-                .permitAll();
+        // http.logout()
+        //         .logoutUrl("/logout") // URL để đăng xuất
+        //         .logoutSuccessUrl("/login?logout") // URL sau khi đăng xuất thành công
+        //         .invalidateHttpSession(true) // Hủy phiên HttpSession
+        //         .deleteCookies("JWT") // Xóa cookie khi đăng xuất
+        //         .permitAll();
 
         // http.addFilterBefore(jwtAuthenticationFilter(),
         // UsernamePasswordAuthenticationFilter.class)
         // .exceptionHandling().accessDeniedPage("/error/403");
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler());
 
-        http.exceptionHandling().authenticationEntryPoint(new MyAuthenticationEntryPoint());
 
-        http.sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS); // Đặt cách quản lý session (ví dụ: STATELESS,
-                                                                         // IF_REQUIRED, ALWAYS, NEVER)
+        // http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+        //         .exceptionHandling().accessDeniedHandler(customAccessDeniedHandler());
+
+        // http.exceptionHandling().authenticationEntryPoint(new MyAuthenticationEntryPoint());
+
+        // http.sessionManagement()
+        //         .sessionCreationPolicy(SessionCreationPolicy.STATELESS); 
+
+
+        // Đặt cách quản lý session (ví dụ: STATELESS,
+        // IF_REQUIRED, ALWAYS, NEVER)
         // .invalidSessionUrl("/invalidSession") // Đặt URL để xử lý khi session không
         // hợp lệ
         // .maximumSessions(1) // Đặt số lượng phiên tối đa mà một người dùng có thể có

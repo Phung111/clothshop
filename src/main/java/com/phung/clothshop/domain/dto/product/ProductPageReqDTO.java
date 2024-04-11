@@ -13,20 +13,16 @@ import lombok.Setter;
 @Setter
 public class ProductPageReqDTO {
 
-    private String currentPage = "1";
+    private String productSize;
+
+    private String currentPage;
 
     private String keySearch;
 
     private Boolean latest;
-    private Boolean topsales;
+    private Boolean nameAsc;
     private Boolean priceAsc;
-
-    private String eCategory;
-    private String eTopLength;
-    private String eCountry;
-    private String eSeason;
-    private String eStyle;
-    private String eShipsFrom;
+    private Boolean topsales;
 
     private List<String> eCategories;
     private List<String> eTopLengths;

@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.phung.clothshop.domain.dto.product.ProductCreateReqDTO;
 import com.phung.clothshop.domain.dto.product.ProductPageReqDTO;
@@ -54,12 +55,19 @@ public class ProductAPI {
     @Autowired
     private ValidateMultipartFiles validateMultipartFiles;
 
-    @GetMapping("/get-page")
-    public ResponseEntity<?> getPage(ProductPageReqDTO productPageReqDTO) {
+    @PostMapping("/get-page")
+    public ResponseEntity<?> getPage(@RequestBody ProductPageReqDTO productPageReqDTO) {
 
-        Integer size = 60;
+        String sizeStr = productPageReqDTO.getProductSize();
+        Integer size;
+        if( sizeStr !=null && !sizeStr.trim().isEmpty()) {
+            size = Integer.parseInt(productPageReqDTO.getProductSize()) ;
+        } else {
+            size = 10;
+        }
+
         Integer currentPage = Integer.parseInt(productPageReqDTO.getCurrentPage()) - 1;
-        Pageable pageable = PageRequest.of(currentPage, size, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(currentPage, size);
 
         Page<ProductResDTO> productResDTOs = iProductService.getPage(productPageReqDTO, pageable);
         if (productResDTOs.isEmpty()) {
@@ -94,12 +102,14 @@ public class ProductAPI {
     }
 
     @PostMapping("/create")
-    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    // @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<?> createProduct(
-            @ModelAttribute @Validated ProductCreateReqDTO productCreateReqDTO,
+             @Validated ProductCreateReqDTO productCreateReqDTO,
             BindingResult bindingResult) throws NumberFormatException, ParseException {
-
-        validateMultipartFiles.validateMultipartFiles(productCreateReqDTO.getMultipartFiles(), bindingResult);
+        
+        if(productCreateReqDTO.getMultipartFiles() != null) {
+            validateMultipartFiles.validateMultipartFiles(productCreateReqDTO.getMultipartFiles(), bindingResult);   
+        }
 
         if (bindingResult.hasErrors()) {
             return appUtils.mapErrorToResponse(bindingResult);

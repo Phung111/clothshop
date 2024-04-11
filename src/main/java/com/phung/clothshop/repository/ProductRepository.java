@@ -3,23 +3,16 @@ package com.phung.clothshop.repository;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import javax.persistence.criteria.Order;
 
-import com.phung.clothshop.domain.dto.discount.DiscountResDTO;
 import com.phung.clothshop.domain.dto.product.ProductPageReqDTO;
-import com.phung.clothshop.domain.dto.product.ProductResDTO;
 import com.phung.clothshop.domain.entity.product.ECategory;
 import com.phung.clothshop.domain.entity.product.Product;
 import com.phung.clothshop.domain.entity.productDetail.ECountry;
@@ -40,32 +33,6 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
     @Query("SELECT p FROM Product p ORDER BY p.sold DESC")
     List<Product> findTopSale(Pageable pageable);
 
-    // default Page<Product> findProductsWithValidDiscount(Pageable pageable) {
-    // return findAll((root, criteriaQuery, criteriaBuilder) -> {
-    // criteriaQuery.distinct(true);
-
-    // List<Predicate> predicates = new ArrayList<>();
-
-    // Predicate discountNotNullPredicate =
-    // criteriaBuilder.isNotNull(root.get("discount"));
-    // Predicate dateStartPredicate = criteriaBuilder.lessThanOrEqualTo(
-    // criteriaBuilder.currentDate(),
-    // root.get("discount").get("dateStart"));
-    // Predicate dateEndPredicate = criteriaBuilder.greaterThanOrEqualTo(
-    // criteriaBuilder.currentDate(),
-    // root.get("discount").get("dateEnd"));
-
-    // Predicate validDiscountPredicate = criteriaBuilder.and(
-    // discountNotNullPredicate,
-    // dateStartPredicate,
-    // dateEndPredicate);
-
-    // predicates.add(validDiscountPredicate);
-
-    // return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-    // }, pageable);
-    // }
-
     default Page<Product> getPage(ProductPageReqDTO productPageReqDTO, Pageable pageable) {
         return findAll((root, criteriaQuery, criteriaBuilder) -> {
 
@@ -75,11 +42,12 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
             String keySearch = productPageReqDTO.getKeySearch();
 
             Boolean latest = productPageReqDTO.getLatest();
-            Boolean topsales = productPageReqDTO.getTopsales();
+            Boolean nameAsc = productPageReqDTO.getNameAsc();
             Boolean priceAsc = productPageReqDTO.getPriceAsc();
+            Boolean topsales = productPageReqDTO.getTopsales();
 
-            String priceFrom = productPageReqDTO.getPriceFrom();
-            String priceTo = productPageReqDTO.getPriceTo();
+            String priceFromStr = productPageReqDTO.getPriceFrom();
+            String priceToStr = productPageReqDTO.getPriceTo();
 
             List<String> eCategories = productPageReqDTO.getECategories();
             List<String> eTopLengths = productPageReqDTO.getETopLengths();
@@ -90,21 +58,47 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
 
             if (keySearch != null) {
                 Predicate predicateName = criteriaBuilder.like(root.get("name"), "%" + keySearch + "%");
-                Predicate predicateDecription = criteriaBuilder.like(root.get("description"), "%" + keySearch + "%");
+                Predicate predicateDecription = criteriaBuilder.like(root.get("decription"), "%" + keySearch + "%");
                 Predicate predicateKeySearch = criteriaBuilder.or(predicateName, predicateDecription);
                 predicates.add(predicateKeySearch);
             }
 
+
             if (latest != null && latest) {
-                orders.add((Order) criteriaBuilder.desc(root.get("id")));
+                orders.add(criteriaBuilder.desc(root.get("id")));
+                // criteriaQuery.orderBy(criteriaBuilder.desc(root.get("id")));
+            } 
+            if (latest != null && !latest) {
+                orders.add(criteriaBuilder.asc(root.get("id")));
+                // criteriaQuery.orderBy(criteriaBuilder.asc(root.get("id")));
+            }
+            
+
+            if (nameAsc != null && nameAsc) {
+                orders.add(criteriaBuilder.asc(root.get("name")));
+                // criteriaQuery.orderBy(criteriaBuilder.asc(root.get("name")));
+            }
+            if (nameAsc != null && !nameAsc) {
+                orders.add(criteriaBuilder.desc(root.get("name")));
+                // criteriaQuery.orderBy(criteriaBuilder.desc(root.get("name")));
+            }
+
+            if (priceAsc != null && priceAsc) {
+                orders.add(criteriaBuilder.asc(root.get("price")));
+                // criteriaQuery.orderBy(criteriaBuilder.asc(root.get("price")));
+            }
+            if (priceAsc != null && !priceAsc) {
+                orders.add(criteriaBuilder.desc(root.get("price")));
+                // criteriaQuery.orderBy(criteriaBuilder.desc(root.get("price")));
             }
 
             if (topsales != null && topsales) {
-                criteriaQuery.orderBy(criteriaBuilder.desc(root.get("sold")));
+                orders.add(criteriaBuilder.asc(root.get("sold")));
+                // criteriaQuery.orderBy(criteriaBuilder.asc(root.get("sold")));
             }
-
-            if (priceAsc != null && !priceAsc) {
-                criteriaQuery.orderBy(criteriaBuilder.desc(root.get("price")));
+            if (topsales != null && !topsales) {
+                orders.add(criteriaBuilder.desc(root.get("sold")));
+                // criteriaQuery.orderBy(criteriaBuilder.desc(root.get("sold")));
             }
 
             if (eCategories != null  && !eCategories.isEmpty()) {
@@ -173,19 +167,33 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
                 Predicate predicateAdd = criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
                 predicates.add(predicateAdd);
             }
-
-            if (priceFrom != null && priceTo != null) {
+            
+            if (priceFromStr != null && priceToStr != null && !priceFromStr.trim().isEmpty() && !priceToStr.trim().isEmpty()) {
+                Long priceFrom = Long.parseLong(priceFromStr);
+            Long priceTo = Long.parseLong(priceToStr);
                 Predicate pricePredicate = criteriaBuilder.between(root.get("price"), priceFrom, priceTo);
                 predicates.add(pricePredicate);
-            } else if (priceFrom != null) {
+            } else if (priceFromStr != null && !priceFromStr.trim().isEmpty()) {
+                Long priceFrom = Long.parseLong(priceFromStr);
                 Predicate pricePredicate = criteriaBuilder.greaterThanOrEqualTo(root.get("price"), priceFrom);
                 predicates.add(pricePredicate);
-            } else if (priceTo != null) {
+            } else if (priceToStr != null && !priceToStr.trim().isEmpty()) {
+                Long priceTo = Long.parseLong(priceToStr);
                 Predicate pricePredicate = criteriaBuilder.lessThanOrEqualTo(root.get("price"), priceTo);
                 predicates.add(pricePredicate);
-            }
+            }   
 
-            return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+            Predicate searchCondition = criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
+
+            // // Thêm các điều kiện sắp xếp vào câu truy vấn
+            criteriaQuery.where(searchCondition);
+            criteriaQuery.orderBy(orders);
+
+            // // Áp dụng điều kiện tìm kiếm và sắp xếp vào câu truy vấn
+            return criteriaQuery.getRestriction();
+            
+
+            // return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
         }, pageable);
     }
 
