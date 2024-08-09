@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.crypto.SecretKey;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +25,7 @@ import com.phung.clothshop.domain.entity.customer.Customer;
 import com.phung.clothshop.service.account.IAccountService;
 import com.phung.clothshop.service.customer.ICustomerService;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
@@ -52,10 +55,12 @@ public class JwtService {
         Optional<Customer> customerOptional = iCustomerService.findByAccount(account);
         Customer customer = customerOptional.get();
         Long customerId = customer.getId();
+        Long cartId = customer.getCart().getId();
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", accountPrinciple.getERole().toString());
         claims.put("customerId", customerId);
+        claims.put("cartId", cartId);
 
         return Jwts.builder()
                 .setSubject((accountPrinciple.getUsername()))
@@ -93,4 +98,43 @@ public class JwtService {
                 .parseClaimsJws(token)
                 .getBody().getSubject();
     }
+
+    public Long getCustomerIdFromJwtToken(String token) {
+    Claims claims = Jwts.parserBuilder()
+                        .setSigningKey(secretKey)
+                        .build()
+                        .parseClaimsJws(token)
+                        .getBody();
+
+    return Long.parseLong(claims.get("customerId").toString());
+    }
+
+    public String getRoleFromJwtToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                            .setSigningKey(secretKey)
+                            .build()
+                            .parseClaimsJws(token)
+                            .getBody();
+    
+        return claims.get("role").toString();
+        }
+
+    public Long getCartIdFromJwtToken(String token) {
+        Claims claims = Jwts.parserBuilder()
+                            .setSigningKey(secretKey)
+                            .build()
+                            .parseClaimsJws(token)
+                            .getBody();
+    
+        return Long.parseLong(claims.get("cartId").toString());
+        }
+
+    public String extractJwtFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+    
 }

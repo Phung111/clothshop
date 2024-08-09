@@ -23,7 +23,6 @@ import com.phung.clothshop.utils.DateFormat;
 @Setter
 @Entity
 @Table(name = "vouchers")
-@Where(clause = "deleted = false")
 public class Voucher extends BaseEntity {
 
     @Id
@@ -63,7 +62,7 @@ public class Voucher extends BaseEntity {
             String startDate = DateFormat.format(dateStart);
             String startEnd = DateFormat.format(dateEnd);
 
-            throw new CustomErrorException(HttpStatus.BAD_REQUEST, String.format("The voucher is valid from %s to %s",
+            throw new CustomErrorException(HttpStatus.BAD_REQUEST, String.format("Voucher cant be used yet. The voucher is valid from %s to %s",
                     startDate, startEnd));
 
         }

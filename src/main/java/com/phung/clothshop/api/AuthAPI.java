@@ -1,10 +1,8 @@
 package com.phung.clothshop.api;
 
 import java.text.ParseException;
+import java.util.Collection;
 import java.util.Optional;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -12,9 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,8 +24,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.phung.clothshop.domain.dto.account.AccountLoginReqDTO;
 import com.phung.clothshop.domain.dto.account.AccountRegisterReqDTO;
+import com.phung.clothshop.domain.dto.account.AccountResDTO;
+import com.phung.clothshop.domain.dto.cusomter.CustomerResDTO;
+import com.phung.clothshop.domain.dto.order.CartDTO;
 import com.phung.clothshop.domain.entity.account.Account;
 import com.phung.clothshop.domain.entity.customer.Customer;
+import com.phung.clothshop.domain.entity.order.Cart;
 import com.phung.clothshop.exceptions.CustomErrorException;
 import com.phung.clothshop.service.JwtService;
 import com.phung.clothshop.service.account.IAccountService;
@@ -53,21 +58,30 @@ public class AuthAPI {
 
     @Autowired
     private ICartService iCartService;
+    
+
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Validated AccountLoginReqDTO accountLoginReqDTO,
-            BindingResult bindingResult,
-            HttpServletRequest request) {
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return appUtils.mapErrorToResponse(bindingResult);
+        }
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(accountLoginReqDTO.getUsername(),
                         accountLoginReqDTO.getPassword()));
+                        
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String jwt = jwtService.generateTokenLogin(authentication);
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+    
+        // Lấy danh sách role của người dùng
+        // Collection<? extends GrantedAuthority> roles = userDetails.getAuthorities();
 
-        // debug mấy cái khác để xem có thế lấy usernaem từ đó
         Account curentAccount = iAccountService.getByUsername(accountLoginReqDTO.getUsername());
 
         if (curentAccount.getDeleted()) {
@@ -82,11 +96,21 @@ public class AuthAPI {
 
             Optional<Customer> customerOptional = iCustomerService.findByAccount(curentAccount);
             Customer customer = customerOptional.get();
-            Long customerId = customer.getId();
-            Long cartId = customer.getCart().getId();
-            HttpSession session = request.getSession(true);
-            session.setAttribute("CUSTOMER_ID", customerId);
-            session.setAttribute("CART_ID", cartId);
+
+            CustomerResDTO customerResDTO = customer.customerResDTO();
+
+            Long cartID = customer.getCart().getId();
+            Optional<Cart> cartOptional = iCartService.findById(cartID);
+            Cart cart = cartOptional.get();
+
+            CartDTO cartDTO = cart.toCartDTO();
+
+
+            AccountResDTO accountResDTO = new AccountResDTO();
+            accountResDTO
+                .setCustomer(customerResDTO)
+                .setCart(cartDTO)
+                .setJwt(jwt);
 
             ResponseCookie responseCookie = ResponseCookie.from("JWT", jwt)
                     .httpOnly(false)
@@ -99,11 +123,10 @@ public class AuthAPI {
             return ResponseEntity
                     .ok()
                     .header(HttpHeaders.SET_COOKIE, responseCookie.toString())
-                    .body("Login successfully!");
+                    .body(accountResDTO);
         } catch (Exception e) {
             throw new CustomErrorException(HttpStatus.BAD_REQUEST, "Invalid data!, please check the information again");
         }
-
     }
 
     @PostMapping("/register")

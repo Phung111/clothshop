@@ -1,6 +1,9 @@
 package com.phung.clothshop.domain.entity.product;
 
 import javax.persistence.*;
+
+import org.hibernate.annotations.Where;
+
 import lombok.*;
 
 import com.phung.clothshop.domain.BaseEntity;
@@ -17,6 +20,7 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "products")
+@Where(clause = "deleted = false")
 public class Product extends BaseEntity {
 
     @Id
@@ -47,19 +51,19 @@ public class Product extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column
-    private ECategory eCategory;
+    private ECategory category;
 
     @Enumerated(EnumType.STRING)
     @Column
-    private EColor eColor;
+    private EColor color;
 
     @Enumerated(EnumType.STRING)
     @Column
-    private ESize eSize;
+    private ESize size;
 
     @Enumerated(EnumType.STRING)
     @Column
-    private EProductStatus eProductStatus;
+    private EProductStatus productStatus;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "product_detail_id", referencedColumnName = "id", nullable = false)
@@ -79,34 +83,26 @@ public class Product extends BaseEntity {
                 .setId(id)
                 .setName(name)
                 .setPrice(price)
-                .setDiscountResDTO(null)
-                .setPriceTotal(price)
+                .setDiscountResDTO(discount != null ? discount.toDiscountResDTO() : null)
+                .setPriceTotal(priceTotal)
                 .setQuantity(quantity)
                 .setSold(sold)
                 .setDecription(decription)
-                .setECategory(eCategory)
-                .setEColor(eColor)
-                .setESize(eSize)
-                .setEProductStatus(eProductStatus)
+                .setCategory(category)
+                .setColor(color)
+                .setSize(size)
+                .setProductStatus(productStatus)
                 .setProductDetail(productDetail)
                 .setImages(productImageDTOs)
                 .setDeleted(getDeleted())
                 .setCreatedAt(getCreatedAt())
                 .setUpdatedAt(getUpdatedAt());
 
-        if (discount != null) {
-            productResDTO.setDiscountResDTO(discount.toDiscountResDTO());
-            if (discount.getPercent() != null) {
-                Long priceTotal = price - price * discount.getPercent() / 100;
-                productResDTO.setPriceTotal(priceTotal);
-            }
-        }
-
         return productResDTO;
     }
 
     public String toVariations() {
-        String variations = eCategory.toString() + "," + eColor.toString() + "," + eSize.toString();
+        String variations = category.toString() + "," + color.toString() + "," + size.toString();
         return variations;
     }
 }

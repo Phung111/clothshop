@@ -30,12 +30,6 @@ public class Account extends BaseEntity {
     @Column(name = "e_role", nullable = false)
     private ERole eRole;
 
-    public AccountResDTO toAccountResDTO() {
-        return new AccountResDTO()
-                .setId(id)
-                .setUsername(username)
-                .setPassword(password)
-                .setERole(eRole.toString());
-    }
+    
 
 }

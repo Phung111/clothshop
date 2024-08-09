@@ -10,7 +10,7 @@ import lombok.*;
 @Setter
 public class AddressShipResDTO {
 
-    private AddressResDTO addressChangeResDTO;
+    private AddressResDTO address;
 
-    private Long shipTotalChangeRes;
+    private Long shipTotal;
 }

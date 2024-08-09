@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.phung.clothshop.domain.dto.product.ProductImageDTO;
-import com.phung.clothshop.domain.dto.product.ProductUpdateReqDTO;
+
 import com.phung.clothshop.domain.entity.product.Product;
 import com.phung.clothshop.domain.entity.product.ProductImage;
 import com.phung.clothshop.repository.ProductImageRepository;
@@ -136,6 +136,12 @@ public class ProductImageService implements IProductImageService {
     @Override
     public List<ProductImage> findByProduct_Id(Long productId) {
         return productImageRepository.findByProduct_Id(productId);
+    }
+
+    @Override
+    public void deleteProductImage(ProductImage productImage) {
+        productImage.setDeleted(true);
+        productImageRepository.save(productImage);
     }
 
 }

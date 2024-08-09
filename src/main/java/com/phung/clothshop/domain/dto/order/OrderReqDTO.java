@@ -2,6 +2,8 @@ package com.phung.clothshop.domain.dto.order;
 
 import java.util.List;
 
+import javax.validation.constraints.NotBlank;
+
 import lombok.*;
 
 @AllArgsConstructor
@@ -10,7 +12,11 @@ import lombok.*;
 @Setter
 public class OrderReqDTO {
 
-    private String voucherID;
+    @NotBlank(message = "addressID can not blank")
+    private String addressID;
 
     private List<Long> cartItemIDs;
+
+    private String voucherID;
+
 }

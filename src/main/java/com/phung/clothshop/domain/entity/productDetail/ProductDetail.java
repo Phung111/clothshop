@@ -18,22 +18,22 @@ public class ProductDetail {
 
     @Enumerated(EnumType.STRING)
     @Column
-    private ETopLength eTopLength;
+    private ETopLength topLength;
 
     @Enumerated(EnumType.STRING)
     @Column
-    private ECountry eCountry;
+    private ECountry country;
 
     @Enumerated(EnumType.STRING)
     @Column
-    private ESeason eSeason;
+    private ESeason season;
 
     @Enumerated(EnumType.STRING)
     @Column
-    private EStyle eStyle;
+    private EStyle style;
 
     @Enumerated(EnumType.STRING)
     @Column
-    private EShipsFrom eShipsFrom;
+    private EShipsFrom shipsFrom;
 
 }

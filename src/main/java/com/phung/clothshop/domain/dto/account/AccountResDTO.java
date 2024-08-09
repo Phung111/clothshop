@@ -1,5 +1,9 @@
 package com.phung.clothshop.domain.dto.account;
 
+import com.phung.clothshop.domain.dto.cusomter.CustomerResDTO;
+import com.phung.clothshop.domain.dto.order.CartDTO;
+import com.phung.clothshop.domain.entity.order.Cart;
+
 import lombok.*;
 
 @AllArgsConstructor
@@ -7,10 +11,10 @@ import lombok.*;
 @Getter
 @Setter
 public class AccountResDTO {
+    
+    private CustomerResDTO customer;
+    private CartDTO cart;
+    private String jwt;
 
-    private Long id;
-    private String username;
-    private String password;
-    private String eRole;
 
 }

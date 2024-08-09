@@ -12,6 +12,8 @@ public class CartDTO {
 
     private Long cartId;
 
-    private List<CartItemDTO> cartItemDTOs;
+    private List<CartItemDTO> cartItems;
+
+    private Long count;
 
 }

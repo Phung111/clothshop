@@ -14,7 +14,7 @@ public class AddressResDTO {
 
     private String phone;
 
-    private String ePronvince;
+    private String province;
 
     private String address;
 

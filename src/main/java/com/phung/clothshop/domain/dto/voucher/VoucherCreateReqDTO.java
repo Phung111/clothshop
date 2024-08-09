@@ -4,6 +4,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,23 +32,26 @@ public class VoucherCreateReqDTO {
     @NotBlank(message = "dateEnd can not blank")
     private String dateEnd;
 
-    @NotBlank(message = "percent can not blank")
-    @Pattern(regexp = "^(0|[1-9][0-9]*)$", message = "percent is not valid number")
-    @Pattern(regexp = "^(100|[1-9]?[0-9])$", message = "percent must be between 0 and 100")
+    // @NotBlank(message = "percent can not blank")
+    // @Pattern(regexp = "^(0|[1-9][0-9]*)$", message = "percent is not valid number")
+    // @Pattern(regexp = "^(100|[1-9]?[0-9])$", message = "percent must be between 0 and 100")
     private String percent;
 
-    @NotBlank(message = "price can not blank")
-    @Pattern(regexp = "^(0|[1-9][0-9]*)$", message = "price product is not valid number")
-    @Pattern(regexp = "^(1000|[1-9]\\d{3,6})$", message = "price must be between 1.000 and 10.000.000")
+    // @NotBlank(message = "price can not blank")
+    // @Pattern(regexp = "^(0|[1-9][0-9]*)$", message = "price product is not valid number")
     private String price;
 
     public Voucher toVoucher() throws ParseException {
 
+        long percentValue = (percent == null || percent.trim().isEmpty()) ? 0 : Long.parseLong(percent);
+        long priceValue = (price == null || price.trim().isEmpty()) ? 0 : Long.parseLong(price);
+
+
         return new Voucher()
                 .setDateStart(DateFormat.parse(dateStart))
                 .setDateEnd(DateFormat.parse(dateEnd))
-                .setPercent(Long.valueOf(percent))
-                .setPrice(Long.valueOf(price));
+                .setPercent(percentValue)
+                .setPrice(priceValue);
     }
 
 }

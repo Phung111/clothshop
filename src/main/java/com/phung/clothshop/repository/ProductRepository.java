@@ -27,8 +27,8 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
 
     List<Product> findByDiscountId(Long discountId);
 
-    @Query("SELECT p FROM Product p WHERE p.discount IS NOT NULL AND p.discount.dateEnd > CURRENT_DATE")
-    List<Product> findProductsDiscount();
+    @Query("SELECT p FROM Product p WHERE p.discount IS NOT NULL AND p.discount.dateEnd > CURRENT_DATE ORDER BY p.id DESC")
+    List<Product> findProductsDiscount(Pageable pageable);
 
     @Query("SELECT p FROM Product p ORDER BY p.sold DESC")
     List<Product> findTopSale(Pageable pageable);
@@ -55,6 +55,8 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
             List<String> eSeasons = productPageReqDTO.getESeasons();
             List<String> eStyles = productPageReqDTO.getEStyles();
             List<String> eShipsFroms = productPageReqDTO.getEShipsFroms();
+
+            predicates.add(criteriaBuilder.equal(root.get("deleted"), false));
 
             if (keySearch != null) {
                 Predicate predicateName = criteriaBuilder.like(root.get("name"), "%" + keySearch + "%");
@@ -105,7 +107,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
                 List<Predicate> predicateList = new ArrayList<>();
                 for (String item : eCategories) {
                     ECategory enumItem = ECategory.valueOf(item);
-                    Predicate predicateItem = criteriaBuilder.equal(root.get("eCategory"), enumItem);
+                    Predicate predicateItem = criteriaBuilder.equal(root.get("category"), enumItem);
                     predicateList.add(predicateItem);
                 }
                 Predicate predicateAdd = criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
@@ -116,7 +118,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
                 List<Predicate> predicateList = new ArrayList<>();
                 for (String item : eTopLengths) {
                     ETopLength enumItem = ETopLength.valueOf(item);
-                    Predicate predicateItem = criteriaBuilder.equal(root.get("productDetail").get("eToplength"), enumItem);
+                    Predicate predicateItem = criteriaBuilder.equal(root.get("productDetail").get("topLength"), enumItem);
                     predicateList.add(predicateItem);
                 }
                 Predicate predicateAdd = criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
@@ -127,7 +129,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
                 List<Predicate> predicateList = new ArrayList<>();
                 for (String item : eCountries) {
                     ECountry enumItem = ECountry.valueOf(item);
-                    Predicate predicateItem = criteriaBuilder.equal(root.get("productDetail").get("eCountry"), enumItem);
+                    Predicate predicateItem = criteriaBuilder.equal(root.get("productDetail").get("country"), enumItem);
                     predicateList.add(predicateItem);
                 }
                 Predicate predicateAdd = criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
@@ -138,7 +140,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
                 List<Predicate> predicateList = new ArrayList<>();
                 for (String item : eSeasons) {
                     ESeason enumItem = ESeason.valueOf(item);
-                    Predicate predicateItem = criteriaBuilder.equal(root.get("productDetail").get("eSeason"), enumItem);
+                    Predicate predicateItem = criteriaBuilder.equal(root.get("productDetail").get("season"), enumItem);
                     predicateList.add(predicateItem);
                 }
                 Predicate predicateAdd = criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
@@ -149,7 +151,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
                 List<Predicate> predicateList = new ArrayList<>();
                 for (String item : eStyles) {
                     EStyle enumItem = EStyle.valueOf(item);
-                    Predicate predicateItem = criteriaBuilder.equal(root.get("productDetail").get("eStyle"), enumItem);
+                    Predicate predicateItem = criteriaBuilder.equal(root.get("productDetail").get("style"), enumItem);
                     predicateList.add(predicateItem);
                 }
                 Predicate predicateAdd = criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
@@ -161,7 +163,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
                 List<Predicate> predicateList = new ArrayList<>();
                 for (String item : eShipsFroms) {
                     EShipsFrom enumItem = EShipsFrom.valueOf(item);
-                    Predicate predicateItem = criteriaBuilder.equal(root.get("productDetail").get("eShipsFrom"), enumItem);
+                    Predicate predicateItem = criteriaBuilder.equal(root.get("productDetail").get("shipsFrom"), enumItem);
                     predicateList.add(predicateItem);
                 }
                 Predicate predicateAdd = criteriaBuilder.or(predicateList.toArray(new Predicate[0]));
@@ -196,5 +198,9 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
             // return criteriaBuilder.and(predicates.toArray(new Predicate[predicates.size()]));
         }, pageable);
     }
+
+    
+
+    
 
 }

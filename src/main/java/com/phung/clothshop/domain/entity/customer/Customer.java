@@ -1,7 +1,10 @@
 package com.phung.clothshop.domain.entity.customer;
 
 import com.phung.clothshop.domain.BaseEntity;
+import com.phung.clothshop.domain.dto.account.AccountResDTO;
 import com.phung.clothshop.domain.dto.address.AddressResDTO;
+import com.phung.clothshop.domain.dto.cusomter.CustomerOrderResDTO;
+import com.phung.clothshop.domain.dto.cusomter.CustomerResDTO;
 import com.phung.clothshop.domain.entity.account.Account;
 import com.phung.clothshop.domain.entity.order.Cart;
 
@@ -52,5 +55,28 @@ public class Customer extends BaseEntity {
         }
         return addressResDTOs;
     }
+
+    public CustomerResDTO customerResDTO() {
+        return new CustomerResDTO()
+                .setCustomerId(id)
+                .setEmail(account.getUsername())
+                .setRole(account.getERole().toString())
+                .setName(name)
+                .setGender(eGender.toString())
+                .setDob(dob.toString());
+    }
+
+    public CustomerOrderResDTO toCustomerOrderResDTO() {
+
+        List<AddressResDTO> addressResDTOs = toAddressResDTO();
+
+        return new CustomerOrderResDTO()
+                .setId(id)
+                .setName(name)
+                .setRole(account.getERole().toString())
+                ;
+    }
+
+    
 
 }

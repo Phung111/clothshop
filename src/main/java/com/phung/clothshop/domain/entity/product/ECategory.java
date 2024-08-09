@@ -4,7 +4,11 @@ public enum ECategory {
     SHIRT,
     PANT,
     SHOE,
-    JACKET;
+    SANDAL,
+    JACKET,
+    SKIRT,
+    DRESS;
+
 
     public String getValue() {
         return this.name();

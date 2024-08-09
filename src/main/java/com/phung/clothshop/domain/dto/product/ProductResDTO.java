@@ -26,10 +26,10 @@ public class ProductResDTO {
     private Long quantity;
     private Long sold;
     private String decription;
-    private ECategory eCategory;
-    private EColor eColor;
-    private ESize eSize;
-    private EProductStatus eProductStatus;
+    private ECategory category;
+    private EColor color;
+    private ESize size;
+    private EProductStatus productStatus;
     private ProductDetail productDetail;
     private List<ProductImageDTO> images;
     private Boolean deleted;

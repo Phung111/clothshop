@@ -7,6 +7,7 @@ import com.phung.clothshop.domain.entity.customer.Address;
 import com.phung.clothshop.domain.entity.customer.Customer;
 import com.phung.clothshop.domain.entity.ship.EPronvince;
 import com.phung.clothshop.utils.customAnnotation.EnumValidCheck;
+import com.phung.clothshop.utils.customAnnotation.EnumValidCheckName;
 
 import lombok.*;
 
@@ -14,7 +15,7 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-public class AddressAddReqDTO {
+public class AddressReqDTO {
 
     @NotBlank(message = "nameCustomer can not blank")
     private String nameCustomer;
@@ -23,9 +24,9 @@ public class AddressAddReqDTO {
     @Pattern(regexp = "^0[1-9][0-9]{8}$", message = "Phone is invalid!")
     private String phone;
 
-    @NotBlank(message = "ePronvince can not blank")
-    @EnumValidCheck(enumClass = EPronvince.class, message = "Invalid ePronvince value")
-    private String ePronvince;
+    @NotBlank(message = "province can not blank")
+    @EnumValidCheckName(enumClass = EPronvince.class, message = "Invalid pronvice value")
+    private String pronvice;
 
     @NotBlank(message = "address can not blank")
     private String address;
@@ -37,7 +38,7 @@ public class AddressAddReqDTO {
         return new Address()
                 .setNameCustomer(nameCustomer)
                 .setPhone(phone)
-                .setEPronvince(EPronvince.fromName(ePronvince))
+                .setEPronvince(EPronvince.fromName(pronvice))
                 .setAddress(address)
                 .setCustomer(customer)
                 .setIsDefault(isDefault);

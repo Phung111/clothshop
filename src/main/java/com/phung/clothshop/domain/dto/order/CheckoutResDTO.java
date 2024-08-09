@@ -13,11 +13,11 @@ import lombok.*;
 @Setter
 public class CheckoutResDTO {
 
-    private AddressResDTO addressResDTO;
+    private AddressResDTO address;
 
-    private List<CartItemDTO> cartItemResDTOs;
+    private List<CartItemDTO> cartItems;
 
-    private VoucherResDTO voucherResDTO;
+    private VoucherResDTO voucher;
 
-    private TotalResDTO totalResDTO;
+    private TotalResDTO total;
 }

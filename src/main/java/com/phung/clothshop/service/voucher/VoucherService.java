@@ -6,10 +6,15 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.phung.clothshop.domain.dto.voucher.VoucherPageReqDTO;
+import com.phung.clothshop.domain.dto.voucher.VoucherResDTO;
 import com.phung.clothshop.domain.entity.order.Voucher;
+import com.phung.clothshop.domain.entity.product.Product;
 import com.phung.clothshop.repository.VoucherRepository;
 
 @Service
@@ -54,5 +59,15 @@ public class VoucherService implements IVoucherSevice {
     @Override
     public List<Voucher> findValidVouchers() {
         return voucherRepository.findValidVouchers();
+    }
+
+    @Override
+    public Page<VoucherResDTO> getPage(VoucherPageReqDTO voucherPageReqDTO, Pageable pageable) {
+        return voucherRepository.getPage(voucherPageReqDTO, pageable).map(Voucher::toVoucherResDTO);
+    }
+
+    @Override
+    public Page<VoucherResDTO> getPageWhenValid(VoucherPageReqDTO voucherPageReqDTO, Pageable pageable) {
+        return voucherRepository.getPageWhenValid(voucherPageReqDTO, pageable).map(Voucher::toVoucherResDTO);
     }
 }

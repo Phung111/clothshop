@@ -34,7 +34,7 @@ public class BannerAPI {
     private IBannerService iBannerService;
 
     @Autowired
-    private ValidateMultipartFiles validateMultipartFiles;
+    private ValidateMultipartFiles validatefiles;
 
     @Autowired
     private AppUtils appUtils;
@@ -49,9 +49,12 @@ public class BannerAPI {
 
     @PostMapping("/create")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public ResponseEntity<?> create(MultipartFile[] files) {
+    public ResponseEntity<?> create(MultipartFile[] files, BindingResult bindingResult) {
 
-        validateMultipartFiles.validatefiles(files);
+        validatefiles.validatefiles(files,bindingResult);
+        if (bindingResult.hasErrors()) {
+            return appUtils.mapErrorToResponse(bindingResult);
+        }
 
         List<Banner> banners = iBannerService.uploadBanners(files);
 

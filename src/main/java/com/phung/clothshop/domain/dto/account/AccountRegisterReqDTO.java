@@ -12,10 +12,9 @@ import com.phung.clothshop.domain.entity.customer.Address;
 import com.phung.clothshop.domain.entity.customer.Customer;
 import com.phung.clothshop.domain.entity.customer.EGender;
 import com.phung.clothshop.domain.entity.order.Cart;
-import com.phung.clothshop.domain.entity.product.EProductStatus;
-import com.phung.clothshop.domain.entity.product.ESize;
 import com.phung.clothshop.domain.entity.ship.EPronvince;
 import com.phung.clothshop.utils.customAnnotation.EnumValidCheck;
+import com.phung.clothshop.utils.customAnnotation.EnumValidCheckName;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -52,16 +51,16 @@ public class AccountRegisterReqDTO {
     private String address;
 
     @NotBlank(message = "EGender can not blank")
-    @EnumValidCheck(enumClass = EGender.class, message = "Invalid gender value")
-    private String eGender;
+    @EnumValidCheckName(enumClass = EGender.class, message = "Invalid gender value")
+    private String gender;
 
     @NotBlank(message = "Chose date of birth please!")
     @Pattern(regexp = "^\\d{4}\\-(0?[1-9]|1[012])\\-(0?[1-9]|[12][0-9]|3[01])$", message = "Date of birth is invalid!.")
     private String dob;
 
-    @NotBlank(message = "ePronvince can not blank")
-    @EnumValidCheck(enumClass = EPronvince.class, message = "Invalid ePronvince value")
-    private String ePronvince;
+    @NotBlank(message = "pronvice can not blank")
+    @EnumValidCheckName(enumClass = EPronvince.class, message = "Invalid pronvice value")
+    private String pronvice;
 
     public Account toAccount() {
         return new Account()
@@ -73,12 +72,9 @@ public class AccountRegisterReqDTO {
 
     public Customer toCustomer(Account account, Cart cart) throws NumberFormatException, ParseException {
 
-        // List<Address> addresses = new ArrayList<>();
-        // addresses.add(address);
-
         return new Customer()
                 .setName(name)
-                .setEGender(EGender.valueOf(eGender))
+                .setEGender(EGender.fromName(gender))
                 .setDob(new SimpleDateFormat("yyyy-MM-dd").parse(dob))
                 .setAccount(account)
                 .setCart(cart);
@@ -88,7 +84,7 @@ public class AccountRegisterReqDTO {
         return new Address()
                 .setNameCustomer(customer.getName())
                 .setPhone(phone)
-                .setEPronvince(EPronvince.valueOf(ePronvince))
+                .setEPronvince(EPronvince.fromName(pronvice))
                 .setAddress(address)
                 .setCustomer(customer)
                 .setIsDefault(true);

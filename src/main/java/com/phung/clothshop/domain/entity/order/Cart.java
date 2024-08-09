@@ -27,15 +27,17 @@ public class Cart extends BaseEntity {
     private List<CartItem> cartItems;
 
     public CartDTO toCartDTO() {
-
+        long count = 0;
         List<CartItemDTO> cartItemDTOs = new ArrayList<>();
         for (CartItem cartItem : cartItems) {
             cartItemDTOs.add(cartItem.toCartItemDTO());
+            count++;
         }
 
         return new CartDTO()
                 .setCartId(id)
-                .setCartItemDTOs(cartItemDTOs);
+                .setCartItems(cartItemDTOs)
+                .setCount(count);
     }
 
 }

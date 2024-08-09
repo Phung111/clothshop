@@ -9,7 +9,10 @@ import javax.persistence.*;
 import com.phung.clothshop.domain.BaseEntity;
 import com.phung.clothshop.domain.dto.order.OrderDTO;
 import com.phung.clothshop.domain.dto.order.OrderItemDTO;
+import com.phung.clothshop.domain.dto.order.OrderItemResDTO;
+import com.phung.clothshop.domain.dto.order.OrderResDTO;
 import com.phung.clothshop.domain.dto.order.TotalResDTO;
+import com.phung.clothshop.domain.entity.customer.Address;
 import com.phung.clothshop.domain.entity.customer.Customer;
 
 import lombok.*;
@@ -40,6 +43,10 @@ public class Order extends BaseEntity {
     @OneToOne
     @JoinColumn(name = "voucher_id", referencedColumnName = "id", nullable = true)
     private Voucher voucher;
+
+    @OneToOne
+    @JoinColumn(name = "address_id", referencedColumnName = "id", nullable = true)
+    private Address address; 
 
     @Column
     private Long orderItemsTotal;
@@ -88,24 +95,30 @@ public class Order extends BaseEntity {
         total = orderItemsTotal + shipTotal - voucherTotal;
     }
 
-    public Bill toBill(Order order) {
-        return new Bill()
-                .setOrder(order)
-                .setCustomer(customer)
-                .setVoucher(voucher)
-                .setOrderItemsTotal(orderItemsTotal)
-                .setShipTotal(shipTotal)
-                .setVoucherTotal(voucherTotal)
-                .setTotal(total);
-
-    }
-
     public TotalResDTO toTotalResDTO() {
         return new TotalResDTO()
                 .setItemsTotal(orderItemsTotal)
                 .setShipTotal(shipTotal)
                 .setVoucherTotal(voucherTotal)
                 .setGrandTotal(total);
+    }
+
+    public OrderResDTO toOrderResDTO() {
+        List<OrderItemResDTO> orderItemResDTOs = new ArrayList();
+        for (OrderItem orderItem : orderItems) {
+            orderItemResDTOs.add(orderItem.tOrderItemResDTO());
+        }
+        return new OrderResDTO()
+                .setId(id)
+                .setCustomer(customer.toCustomerOrderResDTO())
+                .setOrderItems(orderItemResDTOs)
+                .setVoucher(voucher != null ? voucher.toVoucherResDTO() : null)
+                .setAddress(address.toAddressResDTO())
+                .setOrderItemsTotal(orderItemsTotal)
+                .setShipTotal(shipTotal)
+                .setVoucherTotal(voucherTotal)
+                .setTotal(total)
+                ;
     }
 
 }

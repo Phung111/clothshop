@@ -44,8 +44,12 @@ public class CartItem extends BaseEntity {
                 .setCartItemId(id)
                 .setCartId(cart.getId())
                 .setProductId(product.getId())
+                .setCategory(product.getCategory())
+                .setImage(product.getImages().get(0).toProductImageDTO())
                 .setName(product.getName())
                 .setPrice(product.getPrice())
+                .setPriceTotal(product.getPriceTotal())
+                .setDiscount(product.getDiscount() != null ? product.getDiscount().toDiscountResDTO() : null)
                 .setVariation(variation)
                 .setQuantity(quantity)
                 .setTotal(total);
@@ -57,8 +61,16 @@ public class CartItem extends BaseEntity {
                 .setProduct(product)
                 .setVariation(variation)
                 .setQuantity(quantity)
-                .setTotal(product.getPrice() * quantity);
+                .setTotal(total);
 
+    }
+
+    public Long caculateTotal() {
+        long totalCal = quantity * product.getPrice();
+        if (product.getDiscount() != null) {
+            totalCal = totalCal/100 * (100-product.getDiscount().getPercent());
+        }
+        return totalCal;
     }
 
 }

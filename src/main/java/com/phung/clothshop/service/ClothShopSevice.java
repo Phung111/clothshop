@@ -16,15 +16,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.phung.clothshop.domain.dto.address.AddressResDTO;
-import com.phung.clothshop.domain.dto.order.BillDTO;
-import com.phung.clothshop.domain.dto.order.BillResDTO;
 import com.phung.clothshop.domain.dto.order.OrderItemDTO;
 import com.phung.clothshop.domain.dto.order.OrderReqDTO;
+import com.phung.clothshop.domain.dto.order.OrderResDTO;
 import com.phung.clothshop.domain.dto.order.TotalResDTO;
 import com.phung.clothshop.domain.dto.voucher.VoucherResDTO;
 import com.phung.clothshop.domain.entity.customer.Address;
 import com.phung.clothshop.domain.entity.customer.Customer;
-import com.phung.clothshop.domain.entity.order.Bill;
 import com.phung.clothshop.domain.entity.order.CartItem;
 import com.phung.clothshop.domain.entity.order.Order;
 import com.phung.clothshop.domain.entity.order.OrderItem;
@@ -35,7 +33,6 @@ import com.phung.clothshop.domain.entity.product.Product;
 import com.phung.clothshop.exceptions.CustomErrorException;
 import com.phung.clothshop.repository.OrderRepository;
 import com.phung.clothshop.service.address.IAddressService;
-import com.phung.clothshop.service.bill.IBillService;
 import com.phung.clothshop.service.cart.ICartService;
 import com.phung.clothshop.service.cartItem.ICartItemService;
 import com.phung.clothshop.service.customer.ICustomerService;
@@ -68,8 +65,6 @@ public class ClothShopSevice implements IClothShopService {
     @Autowired
     private IShipService iShipService;
 
-    @Autowired
-    private IBillService iBillService;
 
     @Autowired
     private IAddressService iAddressService;
@@ -80,50 +75,51 @@ public class ClothShopSevice implements IClothShopService {
     @Autowired
     private ShipCal shipCal;
 
+    @Autowired
+    private JwtService jwtService;
+
     @Override
-    public BillResDTO placeOrder(OrderReqDTO orderReqDTO, HttpServletRequest request) {
+    public OrderResDTO placeOrder(OrderReqDTO orderReqDTO, HttpServletRequest request) {
 
-        HttpSession session = request.getSession(false);
-        if (session == null) {
-            throw new CustomErrorException(HttpStatus.NOT_FOUND, "Session not foud");
-        }
-
-        Long customerID = (Long) session.getAttribute("CUSTOMER_ID");
-        if (customerID == null) {
-            throw new CustomErrorException(HttpStatus.NOT_FOUND, "CUSTOMER_ID not found in session");
-        }
+        String jwtToken = jwtService.extractJwtFromRequest(request);
+        Long customerID = jwtService.getCustomerIdFromJwtToken(jwtToken);
 
         Order order = new Order();
 
         Optional<Customer> customerOptional = iCustomerService.findById(customerID);
         Customer customer = customerOptional.get();
 
-        Optional<Address> addressOptional = iAddressService.findByCustomerIdAndIsDefaultTrue(customerID);
+        Long addressID = Long.parseLong(orderReqDTO.getAddressID());
+        Optional<Address> addressOptional = iAddressService.findById(addressID);
+        if (!addressOptional.isPresent()) {
+            throw new CustomErrorException(HttpStatus.NOT_FOUND, "Address not found with ID: " + addressID);
+        }
         Address address = addressOptional.get();
-        AddressResDTO addressResDTO = address.toAddressResDTO();
         Long shipTotal = shipCal.calculate(address);
         Ship ship = new Ship();
         ship.setTotal(shipTotal);
         ship = iShipService.save(ship);
 
         Voucher voucher = new Voucher();
-        VoucherResDTO voucherResDTO = new VoucherResDTO();
 
         if (orderReqDTO.getVoucherID() != null) {
-            Optional<Voucher> voucherOptional = iVoucherSevice.findById(orderReqDTO.getVoucherID());
+            String voucherID = orderReqDTO.getVoucherID();
+            Optional<Voucher> voucherOptional = iVoucherSevice.findById(voucherID);
+            if (!voucherOptional.isPresent()) {
+                throw new CustomErrorException(HttpStatus.NOT_FOUND, "Voucher not found with ID: " + voucherID);
+            }
             voucher = voucherOptional.get();
             voucher.setDeleted(true);
             voucher = iVoucherSevice.save(voucher);
             voucher.checkDate();
-            voucherResDTO = voucher.toVoucherResDTO();
         } else {
             voucher = null;
-            voucherResDTO = null;
         }
 
         order.setCustomer(customer);
         order.setShip(ship);
         order.setVoucher(voucher);
+        order.setAddress(address);
         order = iOrderService.save(order);
 
         List<OrderItem> orderItems = new ArrayList<>();
@@ -142,9 +138,12 @@ public class ClothShopSevice implements IClothShopService {
             Product product = cartItem.getProduct();
             Long quantity = product.getQuantity() - cartItem.getQuantity();
             product.setQuantity(quantity);
-            product.setSold(cartItem.getQuantity());
+            Long oldSold = product.getSold();
+            Long newSold = oldSold + cartItem.getQuantity();
+            product.setSold(newSold);
             if (quantity == 0) {
-                product.setEProductStatus(EProductStatus.SOLDOUT);
+                product.setProductStatus(EProductStatus.SOLDOUT);
+                // cập nhật ở đây việc xoá luôn product hay giữ nguyên và để product mờ ở front end
             }
             iProductService.save(product);
 
@@ -156,13 +155,9 @@ public class ClothShopSevice implements IClothShopService {
         order.calculateTotal();
         order = iOrderService.save(order);
 
-        TotalResDTO totalResDTO = order.toTotalResDTO();
+        OrderResDTO orderResDTO = order.toOrderResDTO();
 
-        Bill bill = order.toBill(order);
-        Bill billSave = iBillService.save(bill);
-        BillResDTO billResDTO = billSave.toBillResDTO(addressResDTO, orderItemDTOs, voucherResDTO, totalResDTO);
-
-        return billResDTO;
+        return orderResDTO;
 
     }
 

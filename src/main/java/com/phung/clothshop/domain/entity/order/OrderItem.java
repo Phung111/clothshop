@@ -6,6 +6,7 @@ import javax.persistence.*;
 
 import com.phung.clothshop.domain.BaseEntity;
 import com.phung.clothshop.domain.dto.order.OrderItemDTO;
+import com.phung.clothshop.domain.dto.order.OrderItemResDTO;
 import com.phung.clothshop.domain.entity.product.Product;
 
 import lombok.*;
@@ -45,10 +46,22 @@ public class OrderItem extends BaseEntity {
                 .setOrderID(order.getId())
                 .setProductID(product.getId())
                 .setName(product.getName())
-                .setPrice(product.getPrice())
+                .setPrice(product.getPriceTotal())
                 .setVariation(variation)
                 .setQuantity(quantity)
-                .setTotal(quantity * product.getPrice());
+                .setTotal(quantity * product.getPriceTotal())
+                ;
+    }
+
+    public OrderItemResDTO tOrderItemResDTO() {
+        return new OrderItemResDTO()
+                .setId(id)
+                .setOrderID(order.getId())
+                .setProduct(product.toProductResDTO())
+                .setVariation(variation)
+                .setQuantity(quantity)
+                .setTotal(quantity * product.getPriceTotal())
+                ;
     }
 
 }

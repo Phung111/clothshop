@@ -26,9 +26,18 @@ import com.phung.clothshop.domain.dto.discount.DiscountCreateReqDTO;
 import com.phung.clothshop.domain.dto.product.ProductPageReqDTO;
 import com.phung.clothshop.domain.dto.product.ProductResDTO;
 import com.phung.clothshop.domain.entity.banner.Banner;
+import com.phung.clothshop.domain.entity.customer.EGender;
 import com.phung.clothshop.domain.entity.product.Discount;
 import com.phung.clothshop.domain.entity.product.ECategory;
+import com.phung.clothshop.domain.entity.product.EColor;
+import com.phung.clothshop.domain.entity.product.ESize;
 import com.phung.clothshop.domain.entity.product.Product;
+import com.phung.clothshop.domain.entity.productDetail.ECountry;
+import com.phung.clothshop.domain.entity.productDetail.ESeason;
+import com.phung.clothshop.domain.entity.productDetail.EShipsFrom;
+import com.phung.clothshop.domain.entity.productDetail.EStyle;
+import com.phung.clothshop.domain.entity.productDetail.ETopLength;
+import com.phung.clothshop.domain.entity.ship.EPronvince;
 import com.phung.clothshop.exceptions.CustomErrorException;
 import com.phung.clothshop.service.IClothShopService;
 import com.phung.clothshop.service.banner.IBannerService;
@@ -58,34 +67,64 @@ public class ClothShopAPI {
     @Autowired
     private EnumToString enumToString;
 
-    @GetMapping("")
-    public ResponseEntity<?> getAll(ProductPageReqDTO productPageReqDTO) {
+    @GetMapping("get-home")
+    public ResponseEntity<?> getHome(ProductPageReqDTO productPageReqDTO) {
 
         List<Banner> banners = iBannerService.findAll();
 
-        List<ProductResDTO> discounts = iProductService.findProductsDiscount();
+        int size = 18;
+        Pageable pageable= PageRequest.of(0, size);
 
-        int sizeSale = 2;
-        Pageable pageableSale = PageRequest.of(0, sizeSale);
-        List<ProductResDTO> bestsales = iProductService.findTopSale(pageableSale);
-        List<String> categories = enumToString.convert(ECategory.values());
+        List<ProductResDTO> discounts = iProductService.findProductsDiscount(pageable);
 
-        int sizeProduct = 60;
-        Integer currentPage = Integer.parseInt(productPageReqDTO.getCurrentPage()) - 1;
-        Pageable pageableProduct = PageRequest.of(currentPage, sizeProduct, Sort.by("id").descending());
-
-        Page<ProductResDTO> products = iProductService.getPage(productPageReqDTO, pageableProduct);
-        if (products.isEmpty()) {
-            throw new CustomErrorException(HttpStatus.NO_CONTENT, "Can't find product page request");
-        }
+        
+        List<ProductResDTO> bestsales = iProductService.findTopSale(pageable);
 
         Map<String, Object> result = new HashMap<String, Object>();
         result.put("banners", banners);
         result.put("discounts", discounts);
         result.put("bestsales", bestsales);
-        result.put("categories", categories);
-        result.put("products", products);
 
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("get-collection")
+    public ResponseEntity<?> getCollection() {
+        List<String> colors = enumToString.convert(EColor.values());
+        List<String> sizes = enumToString.convert(ESize.values());
+        List<String> categories = enumToString.convert(ECategory.values());
+        List<String> topLengths = enumToString.convert(ETopLength.values());
+        List<String> countries = enumToString.convert(ECountry.values());
+        List<String> seasons = enumToString.convert(ESeason.values());
+        List<String> styles = enumToString.convert(EStyle.values());
+        List<String> shipfroms = enumToString.convert(EShipsFrom.values());
+
+        Map<String, Object> result = new HashMap<String, Object>();
+        result.put("colors", colors);
+        result.put("sizes", sizes);
+        result.put("categories", categories);
+        result.put("topLengths", topLengths);
+        result.put("countries", countries);
+        result.put("seasons", seasons);
+        result.put("styles", styles);
+        result.put("shipfroms", shipfroms);
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("getPronvice")
+    public ResponseEntity<?> getPronvice() {
+        List<String> pronvices = enumToString.convertToName(EPronvince.values());
+        Map<String, Object> result = new HashMap<String, Object>();
+        result.put("pronvices", pronvices);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+
+    @GetMapping("getGender")
+    public ResponseEntity<?> getGender() {
+        List<String> genders = enumToString.convertToName(EGender.values());
+        Map<String, Object> result = new HashMap<String, Object>();
+        result.put("genders", genders);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 

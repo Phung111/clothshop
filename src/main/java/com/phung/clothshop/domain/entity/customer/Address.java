@@ -48,7 +48,7 @@ public class Address extends BaseEntity {
                 .setId(id)
                 .setNameCustomer(nameCustomer)
                 .setPhone(phone)
-                .setEPronvince(ePronvince.getName())
+                .setProvince(ePronvince.getName())
                 .setAddress(address)
                 .setIsDefault(isDefault);
     }

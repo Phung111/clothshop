@@ -13,6 +13,8 @@ import lombok.Setter;
 @Setter
 public class ProductPageReqDTO {
 
+    private Integer stt;
+
     private String productSize;
 
     private String currentPage;

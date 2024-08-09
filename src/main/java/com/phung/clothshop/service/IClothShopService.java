@@ -6,10 +6,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.http.ResponseEntity;
 
-import com.phung.clothshop.domain.dto.order.BillDTO;
-import com.phung.clothshop.domain.dto.order.BillResDTO;
 import com.phung.clothshop.domain.dto.order.OrderReqDTO;
+import com.phung.clothshop.domain.dto.order.OrderResDTO;
 
 public interface IClothShopService {
-    BillResDTO placeOrder(OrderReqDTO orderReqDTO, HttpServletRequest request);
+    OrderResDTO placeOrder(OrderReqDTO orderReqDTO, HttpServletRequest request);
 }

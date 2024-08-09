@@ -17,7 +17,7 @@ public class AccountLoginReqDTO {
     private String username;
 
     @NotBlank(message = "Please enter password!")
-    @Size(min = 3, max = 50, message = "Password length should be between 3 and 50 characters!")
+    @Size(min = 3, max = 20, message = "Password length should be between 3 and 20 characters!")
     private String password;
 
 }

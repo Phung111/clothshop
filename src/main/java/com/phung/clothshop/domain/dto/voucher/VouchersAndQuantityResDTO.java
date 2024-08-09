@@ -10,8 +10,6 @@ import lombok.*;
 @Setter
 public class VouchersAndQuantityResDTO {
 
-    private Long quantity;
-
-    private List<VoucherResDTO> voucherCreatResDTOs;
+    private List<VoucherResDTO> vouchers;
 
 }
