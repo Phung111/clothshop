@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.phung.clothshop.domain.dto.order.OrderResDTO;
 import com.phung.clothshop.domain.entity.order.Order;
 import com.phung.clothshop.repository.OrderRepository;
+import com.phung.clothshop.service.JwtService;
 
 @Service
 @Transactional
@@ -21,6 +22,9 @@ public class OrderService implements IOrderService {
 
     @Autowired
     private OrderRepository orderRepository;
+
+    @Autowired
+    private JwtService jwtService;
 
     @Override
     public List<Order> findAll() {
@@ -55,21 +59,18 @@ public class OrderService implements IOrderService {
     }
 
     @Override
-    public Page<OrderResDTO> getOrder(Pageable pageable,HttpServletRequest request) {
-        // String jwtToken = jwtService.extractJwtFromRequest(request);
-        // String role = jwtService.getRoleFromJwtToken(jwtToken);
-        // Long customerID = jwtService.getCustomerIdFromJwtToken(jwtToken);
-        // if(role.equals("ADMIN")) {
-            return orderRepository.getOrder(pageable).map(Order::toOrderResDTO);
-        // } else {
-        //     return orderRepository.getOrderByCustomer(pageable, customerID).map(Order::toOrderResDTO);
-        // }
+    public Page<OrderResDTO> getOrder(Pageable pageable) {
+        return orderRepository.getOrder(pageable).map(Order::toOrderResDTO);
     }
 
     @Override
-    public Page<OrderResDTO> getOrderByCustomer(Pageable pageable, Long customerID) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getOrderByCustomer'");
+    public Page<OrderResDTO> getOrderByCustomer(Pageable pageable,HttpServletRequest request) {
+        String jwtToken = jwtService.extractJwtFromRequest(request);
+        String role = jwtService.getRoleFromJwtToken(jwtToken);
+        Long customerID = jwtService.getCustomerIdFromJwtToken(jwtToken);
+
+        return orderRepository.getOrderByCustomer(pageable, customerID).map(Order::toOrderResDTO);
+      
     }
 
 }

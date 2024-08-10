@@ -26,16 +26,21 @@ public interface VoucherRepository extends JpaRepository<Voucher, String>,
 
     default Page<Voucher> getPage(VoucherPageReqDTO voucherPageReqDTO, Pageable pageable) {
         return findAll((root, query, criteriaBuilder) -> {
-            Predicate predicate = criteriaBuilder.greaterThan(root.get("dateEnd"), criteriaBuilder.currentDate());
-            return criteriaBuilder.and(predicate);
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(criteriaBuilder.equal(root.get("deleted"), false));
+            predicates.add(criteriaBuilder.greaterThan(root.get("dateEnd"), criteriaBuilder.currentDate()));
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         }, pageable);
     }
 
     default Page<Voucher> getPageWhenValid(VoucherPageReqDTO voucherPageReqDTO, Pageable pageable) {
-        return findAll((root, query, cb) -> {
-            Predicate dateEndPredicate = cb.greaterThan(root.get("dateEnd"), cb.currentDate());
-            Predicate dateStartPredicate = cb.lessThanOrEqualTo(root.get("dateStart"), cb.currentDate());
-            return cb.and(dateEndPredicate, dateStartPredicate);
+        return findAll((root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(criteriaBuilder.equal(root.get("deleted"), false));
+            predicates.add(criteriaBuilder.greaterThan(root.get("dateEnd"), criteriaBuilder.currentDate()));
+            predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("dateStart"), criteriaBuilder.currentDate()));
+            
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         }, pageable);
     }
     

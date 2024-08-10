@@ -18,7 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.http.HttpStatus;
 
 import com.phung.clothshop.domain.entity.customer.Customer;
-
+import com.phung.clothshop.domain.entity.order.Order;
+import com.phung.clothshop.exceptions.CustomErrorException;
 import com.phung.clothshop.domain.dto.order.OrderPageReqDTO;
 import com.phung.clothshop.domain.dto.order.OrderReqDTO;
 import com.phung.clothshop.domain.dto.order.OrderResDTO;
@@ -59,7 +60,7 @@ public class OrderAPI {
     }
 
     @PostMapping("/get-order")
-    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<?> getOrder(OrderPageReqDTO orderPageReqDTO, HttpServletRequest request) {
 
         String sizeStr = orderPageReqDTO.getSize();
@@ -70,7 +71,7 @@ public class OrderAPI {
 
         Pageable pageable = PageRequest.of(currentPage, size);
 
-        Page<OrderResDTO> orderResDTOs = iOrderService.getOrder(pageable,request);
+        Page<OrderResDTO> orderResDTOs = iOrderService.getOrder(pageable);
 
         return new ResponseEntity<>(orderResDTOs,HttpStatus.OK);
     }
@@ -78,13 +79,6 @@ public class OrderAPI {
     @PostMapping("/get-order-by-customer")
     @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
     public ResponseEntity<?> getOrderByCustomer(OrderPageReqDTO orderPageReqDTO, HttpServletRequest request) {
-        String jwtToken = jwtService.extractJwtFromRequest(request);
-        Long customerID = jwtService.getCustomerIdFromJwtToken(jwtToken);
-
-        Optional<Customer> customerOptional = iCustomerService.findById(customerID);
-        if (!customerOptional.isPresent()) {
-            return new ResponseEntity<>("Order not found with customerID: " + customerID, HttpStatus.UNAUTHORIZED);
-        }
 
         String sizeStr = orderPageReqDTO.getSize();
         Integer size = (sizeStr != null && !sizeStr.trim().isEmpty()) ? Integer.parseInt(sizeStr) : 15;
@@ -94,8 +88,21 @@ public class OrderAPI {
 
         Pageable pageable = PageRequest.of(currentPage, size);
 
-        Page<OrderResDTO> orderResDTOs = iOrderService.getOrderByCustomer(pageable, customerID);
+        Page<OrderResDTO> orderResDTOs = iOrderService.getOrderByCustomer(pageable, request);
 
         return new ResponseEntity<>(orderResDTOs,HttpStatus.OK);
+    }
+
+    @PostMapping("/get-order/{orderID}")
+    @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
+    public ResponseEntity<?> getOrderByID(@PathVariable Long orderID) {
+
+        Optional<Order> orderOptional = iOrderService.findById(orderID);
+        if (!orderOptional.isPresent()) {
+            throw new CustomErrorException(HttpStatus.NOT_FOUND, "Order not found with ID: " + orderID);
+        }
+        OrderResDTO orderResDTO = orderOptional.get().toOrderResDTO();
+
+        return new ResponseEntity<>(orderResDTO,HttpStatus.OK);
     }
 }

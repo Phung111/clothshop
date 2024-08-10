@@ -15,8 +15,8 @@ import com.phung.clothshop.service.IGeneralService;
 
 public interface IOrderService extends IGeneralService<Order, Long> {
 
-    Page<OrderResDTO> getOrder(Pageable pageable,HttpServletRequest request);
+    Page<OrderResDTO> getOrder(Pageable pageable);
 
-    Page<OrderResDTO> getOrderByCustomer(Pageable pageable, Long customerID);
+    Page<OrderResDTO> getOrderByCustomer(Pageable pageable,HttpServletRequest request);
 
 }
