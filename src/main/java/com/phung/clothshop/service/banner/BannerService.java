@@ -6,11 +6,14 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.phung.clothshop.domain.entity.banner.Banner;
+import com.phung.clothshop.domain.entity.order.Voucher;
 import com.phung.clothshop.repository.BannerRepository;
 import com.phung.clothshop.utils.CloudinaryUploader;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -93,6 +96,11 @@ public class BannerService implements IBannerService {
             banners.add(banner);
         }
         return banners;
+    }
+
+    @Override
+    public Page<Banner> getPage(Pageable pageable) {
+       return bannerRepository.getPage(pageable);
     }
 
 }

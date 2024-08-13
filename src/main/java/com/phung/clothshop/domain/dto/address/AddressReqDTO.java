@@ -25,8 +25,8 @@ public class AddressReqDTO {
     private String phone;
 
     @NotBlank(message = "province can not blank")
-    @EnumValidCheckName(enumClass = EPronvince.class, message = "Invalid pronvice value")
-    private String pronvice;
+    @EnumValidCheckName(enumClass = EPronvince.class, message = "Invalid province value")
+    private String province;
 
     @NotBlank(message = "address can not blank")
     private String address;
@@ -38,7 +38,7 @@ public class AddressReqDTO {
         return new Address()
                 .setNameCustomer(nameCustomer)
                 .setPhone(phone)
-                .setEPronvince(EPronvince.fromName(pronvice))
+                .setEPronvince(EPronvince.fromName(province))
                 .setAddress(address)
                 .setCustomer(customer)
                 .setIsDefault(isDefault);

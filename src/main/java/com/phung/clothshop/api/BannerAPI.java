@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -12,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.phung.clothshop.domain.dto.banner.BannerPageReqDTO;
+import com.phung.clothshop.domain.dto.banner.BannerReqDTO;
 import com.phung.clothshop.domain.entity.banner.Banner;
 import com.phung.clothshop.exceptions.CustomErrorException;
 import com.phung.clothshop.service.banner.IBannerService;
@@ -46,17 +51,37 @@ public class BannerAPI {
 
         return new ResponseEntity<>(banners, HttpStatus.OK);
     }
+    
+    @PostMapping("/get-banner-page")
+    public ResponseEntity<?> getPage(BannerPageReqDTO bannerPageReqDTO) {
+
+        String sizeStr = bannerPageReqDTO.getSize();
+        Integer size = (sizeStr != null && !sizeStr.trim().isEmpty()) ? Integer.parseInt(sizeStr) : 15;
+
+        String currentPageStr = bannerPageReqDTO.getPage();
+        Integer currentPage = (currentPageStr != null && !currentPageStr.trim().isEmpty()) ? Integer.parseInt(currentPageStr) - 1 : 0;
+
+        Pageable pageable = PageRequest.of(currentPage, size);
+
+        Page<Banner> banners = iBannerService.getPage(pageable);
+
+        return new ResponseEntity<>(banners, HttpStatus.OK);
+    }
 
     @PostMapping("/create")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    public ResponseEntity<?> create(MultipartFile[] files, BindingResult bindingResult) {
+    public ResponseEntity<?> create(BannerReqDTO bannerReqDTO, BindingResult bindingResult) {
 
-        validatefiles.validatefiles(files,bindingResult);
+        if (bannerReqDTO.getFiles() == null || bannerReqDTO.getFiles().length == 0) {
+            throw new CustomErrorException(HttpStatus.BAD_REQUEST, "You must upload images.");
+        }
+
+        validatefiles.validatefiles(bannerReqDTO.getFiles(),bindingResult);
         if (bindingResult.hasErrors()) {
             return appUtils.mapErrorToResponse(bindingResult);
         }
 
-        List<Banner> banners = iBannerService.uploadBanners(files);
+        List<Banner> banners = iBannerService.uploadBanners(bannerReqDTO.getFiles());
 
         return new ResponseEntity<>(banners, HttpStatus.OK);
     }

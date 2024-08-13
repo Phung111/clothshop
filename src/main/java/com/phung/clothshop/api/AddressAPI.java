@@ -139,7 +139,7 @@ public class AddressAPI {
 
     }
 
-    @PatchMapping("/update/{addressID}")
+    @PostMapping("/update/{addressID}")
     @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
     public ResponseEntity<?> updateAddress ( @PathVariable Long addressID,
                                             AddressReqDTO addressReqDTO,

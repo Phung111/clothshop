@@ -112,6 +112,8 @@ public class VoucherAPI {
         Date startDate = DateFormat.parse(voucherCreateReqDTO.getDateStart());
         Date endDate = DateFormat.parse(voucherCreateReqDTO.getDateEnd());
 
+        
+
         if (currentDate.after(startDate)) {
             throw new CustomErrorException(HttpStatus.BAD_REQUEST, "START DATE must be after CURRENT DATE");
         }
