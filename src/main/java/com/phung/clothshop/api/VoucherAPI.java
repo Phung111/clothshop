@@ -63,26 +63,6 @@ public class VoucherAPI {
         return new ResponseEntity<>(voucherResDTOs, HttpStatus.OK);
     }
 
-    @PostMapping("/get-voucher-page-valid")
-    public ResponseEntity<?> getPageWhenValid(VoucherPageReqDTO voucherPageReqDTO) throws ParseException {
-
-        String sizeStr = voucherPageReqDTO.getSize();
-        Integer size = (sizeStr != null && !sizeStr.trim().isEmpty()) ? Integer.parseInt(sizeStr) : 15;
-
-        String currentPageStr = voucherPageReqDTO.getPage();
-        Integer currentPage = (currentPageStr != null && !currentPageStr.trim().isEmpty()) ? Integer.parseInt(currentPageStr) - 1 : 0;
-
-        // Integer currentPage = Integer.parseInt(voucherPageReqDTO.getCurrentPage()) - 1;
-        Pageable pageable = PageRequest.of(currentPage, size);
-
-        Page<VoucherResDTO> voucherResDTOs = iVoucherSevice.getPageWhenValid(voucherPageReqDTO, pageable);
-        if (voucherResDTOs.isEmpty()) {
-            throw new CustomErrorException(HttpStatus.NO_CONTENT, "Can't find voucher page request");
-        }
-
-        return new ResponseEntity<>(voucherResDTOs, HttpStatus.OK);
-    }
-
     @GetMapping("")
     public ResponseEntity<?> getVoucher() throws ParseException {
 
@@ -100,7 +80,7 @@ public class VoucherAPI {
     }
 
     @PostMapping("/create")
-    // @PreAuthorize("hasAnyAuthority('ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<?> createVoucher(@Validated VoucherCreateReqDTO voucherCreateReqDTO, BindingResult bindingResult)
             throws ParseException {
 
@@ -113,10 +93,6 @@ public class VoucherAPI {
         Date endDate = DateFormat.parse(voucherCreateReqDTO.getDateEnd());
 
         
-
-        if (currentDate.after(startDate)) {
-            throw new CustomErrorException(HttpStatus.BAD_REQUEST, "START DATE must be after CURRENT DATE");
-        }
         if (currentDate.after(endDate)) {
             throw new CustomErrorException(HttpStatus.BAD_REQUEST, "END DATE must be after CURRENT DATE");
         }

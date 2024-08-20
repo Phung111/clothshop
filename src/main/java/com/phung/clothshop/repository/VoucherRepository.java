@@ -31,18 +31,6 @@ public interface VoucherRepository extends JpaRepository<Voucher, String>,
             predicates.add(criteriaBuilder.greaterThan(root.get("dateEnd"), criteriaBuilder.currentDate()));
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         }, pageable);
-    }
-
-    default Page<Voucher> getPageWhenValid(VoucherPageReqDTO voucherPageReqDTO, Pageable pageable) {
-        return findAll((root, query, criteriaBuilder) -> {
-            List<Predicate> predicates = new ArrayList<>();
-            predicates.add(criteriaBuilder.equal(root.get("deleted"), false));
-            predicates.add(criteriaBuilder.greaterThan(root.get("dateEnd"), criteriaBuilder.currentDate()));
-            predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("dateStart"), criteriaBuilder.currentDate()));
-            
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-        }, pageable);
-    }
-    
+    } 
 
 }

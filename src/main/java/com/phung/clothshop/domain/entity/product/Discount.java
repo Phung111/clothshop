@@ -40,8 +40,8 @@ public class Discount extends BaseEntity {
     public DiscountResDTO toDiscountResDTO() {
         return new DiscountResDTO()
                 .setId(id)
-                .setDateStart(DateFormat.format(dateStart))
-                .setDateEnd(DateFormat.format(dateEnd))
+                .setDateStart(dateStart)
+                .setDateEnd(dateEnd)
                 .setPercent(percent);
     }
 

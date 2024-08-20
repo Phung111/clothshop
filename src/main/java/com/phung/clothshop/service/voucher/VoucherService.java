@@ -65,9 +65,4 @@ public class VoucherService implements IVoucherSevice {
     public Page<VoucherResDTO> getPage(VoucherPageReqDTO voucherPageReqDTO, Pageable pageable) {
         return voucherRepository.getPage(voucherPageReqDTO, pageable).map(Voucher::toVoucherResDTO);
     }
-
-    @Override
-    public Page<VoucherResDTO> getPageWhenValid(VoucherPageReqDTO voucherPageReqDTO, Pageable pageable) {
-        return voucherRepository.getPageWhenValid(voucherPageReqDTO, pageable).map(Voucher::toVoucherResDTO);
-    }
 }

@@ -194,7 +194,7 @@ public class ProductReqDTO implements Validator {
 
         Long priceTotalSave = Long.parseLong(price);
         if (percent != null && !percent.isEmpty()) {
-            priceTotalSave = priceTotalSave*(1-Long.parseLong(percent)/100);
+            priceTotalSave = priceTotalSave - priceTotalSave*Long.parseLong(percent)/100;
         }
 
         return new Product()

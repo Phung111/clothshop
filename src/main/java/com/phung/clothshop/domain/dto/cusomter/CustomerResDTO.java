@@ -1,5 +1,7 @@
 package com.phung.clothshop.domain.dto.cusomter;
 
+import java.util.Date;
+
 import lombok.*;
 
 @AllArgsConstructor
@@ -15,5 +17,5 @@ public class CustomerResDTO {
 
     private String name;
     private String gender;
-    private String dob;
+    private Date dob;
 }

@@ -16,9 +16,9 @@ public class DiscountResDTO {
 
     private Long id;
 
-    private String dateStart;
+    private Date dateStart;
 
-    private String dateEnd;
+    private Date dateEnd;
 
     private Long percent;
 

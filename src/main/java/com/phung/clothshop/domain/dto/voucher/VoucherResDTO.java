@@ -14,9 +14,9 @@ public class VoucherResDTO {
 
     private String id;
 
-    private String dateStart;
+    private Date dateStart;
 
-    private String dateEnd;
+    private Date dateEnd;
 
     private Long percent;
 

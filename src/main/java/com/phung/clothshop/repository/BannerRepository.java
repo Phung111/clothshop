@@ -24,7 +24,7 @@ public interface BannerRepository extends JpaRepository<Banner, Long>,
                 return findAll((root, query, criteriaBuilder) -> {
                         List<Predicate> predicates = new ArrayList<>();
                         predicates.add(criteriaBuilder.equal(root.get("deleted"), false));
-
+                        query.orderBy(criteriaBuilder.desc(root.get("id")));
                         return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         }, pageable);
     }

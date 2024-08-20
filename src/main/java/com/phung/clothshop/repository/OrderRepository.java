@@ -21,7 +21,7 @@ public interface OrderRepository extends JpaRepository<Order, Long>,
         return findAll((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(criteriaBuilder.equal(root.get("deleted"), false));
-
+            query.orderBy(criteriaBuilder.desc(root.get("id")));
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         }, pageable);
     }
@@ -30,6 +30,8 @@ public interface OrderRepository extends JpaRepository<Order, Long>,
         return findAll((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(criteriaBuilder.equal(root.get("deleted"), false));
+            query.orderBy(criteriaBuilder.desc(root.get("id")));
+            
             predicates.add(criteriaBuilder.equal(root.get("customer").get("id"), customerID));
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

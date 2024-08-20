@@ -86,12 +86,12 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
             }
 
             if (priceAsc != null && priceAsc) {
-                orders.add(criteriaBuilder.asc(root.get("price")));
-                // criteriaQuery.orderBy(criteriaBuilder.asc(root.get("price")));
+                orders.add(criteriaBuilder.asc(root.get("priceTotal")));
+                // criteriaQuery.orderBy(criteriaBuilder.asc(root.get("priceTotal")));
             }
             if (priceAsc != null && !priceAsc) {
-                orders.add(criteriaBuilder.desc(root.get("price")));
-                // criteriaQuery.orderBy(criteriaBuilder.desc(root.get("price")));
+                orders.add(criteriaBuilder.desc(root.get("priceTotal")));
+                // criteriaQuery.orderBy(criteriaBuilder.desc(root.get("priceTotal")));
             }
 
             if (topsales != null && topsales) {
@@ -173,15 +173,15 @@ public interface ProductRepository extends JpaRepository<Product, Long>,
             if (priceFromStr != null && priceToStr != null && !priceFromStr.trim().isEmpty() && !priceToStr.trim().isEmpty()) {
                 Long priceFrom = Long.parseLong(priceFromStr);
             Long priceTo = Long.parseLong(priceToStr);
-                Predicate pricePredicate = criteriaBuilder.between(root.get("price"), priceFrom, priceTo);
+                Predicate pricePredicate = criteriaBuilder.between(root.get("priceTotal"), priceFrom, priceTo);
                 predicates.add(pricePredicate);
             } else if (priceFromStr != null && !priceFromStr.trim().isEmpty()) {
                 Long priceFrom = Long.parseLong(priceFromStr);
-                Predicate pricePredicate = criteriaBuilder.greaterThanOrEqualTo(root.get("price"), priceFrom);
+                Predicate pricePredicate = criteriaBuilder.greaterThanOrEqualTo(root.get("priceTotal"), priceFrom);
                 predicates.add(pricePredicate);
             } else if (priceToStr != null && !priceToStr.trim().isEmpty()) {
                 Long priceTo = Long.parseLong(priceToStr);
-                Predicate pricePredicate = criteriaBuilder.lessThanOrEqualTo(root.get("price"), priceTo);
+                Predicate pricePredicate = criteriaBuilder.lessThanOrEqualTo(root.get("priceTotal"), priceTo);
                 predicates.add(pricePredicate);
             }   
 

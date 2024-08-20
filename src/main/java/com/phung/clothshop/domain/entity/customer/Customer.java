@@ -63,7 +63,7 @@ public class Customer extends BaseEntity {
                 .setRole(account.getERole().toString())
                 .setName(name)
                 .setGender(eGender.toString())
-                .setDob(dob.toString());
+                .setDob(dob);
     }
 
     public CustomerOrderResDTO toCustomerOrderResDTO() {

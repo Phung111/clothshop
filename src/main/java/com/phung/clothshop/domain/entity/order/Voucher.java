@@ -46,8 +46,8 @@ public class Voucher extends BaseEntity {
 
         return new VoucherResDTO()
                 .setId(id)
-                .setDateStart(DateFormat.format(dateStart))
-                .setDateEnd(DateFormat.format(dateEnd))
+                .setDateStart(dateStart)
+                .setDateEnd(dateEnd)
                 .setPercent(percent)
                 .setPrice(price);
     }

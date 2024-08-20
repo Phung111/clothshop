@@ -13,7 +13,8 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedOrigins(
                         "http://localhost:1001",
                         "http://localhost:1002",
-                        "http://localhost:1003")
+                        "http://localhost:1003",
+                        "https://clothshop-iota.vercel.app/")
                 .allowedOriginPatterns("*")
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE")
                 .allowedHeaders("*")

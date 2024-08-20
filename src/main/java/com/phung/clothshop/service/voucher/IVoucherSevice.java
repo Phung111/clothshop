@@ -17,6 +17,4 @@ public interface IVoucherSevice extends IGeneralService<Voucher, String> {
 
     Page<VoucherResDTO> getPage(VoucherPageReqDTO voucherPageReqDTO, Pageable pageable);
 
-    Page<VoucherResDTO> getPageWhenValid(VoucherPageReqDTO voucherPageReqDTO, Pageable pageable);
-
 }

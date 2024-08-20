@@ -90,7 +90,7 @@ public class Order extends BaseEntity {
             }
         }
 
-        voucherTotal = orderItemsTotal * voucherPercent / 100 - voucherPrice;
+        voucherTotal = orderItemsTotal * voucherPercent / 100 + voucherPrice;
 
         total = orderItemsTotal + shipTotal - voucherTotal;
     }
