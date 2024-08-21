@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: com.phung.clothshop.ClothshopApplicationTests
 -------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.761 s - in com.phung.clothshop.ClothshopApplicationTests
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 24.438 s - in com.phung.clothshop.ClothshopApplicationTests
