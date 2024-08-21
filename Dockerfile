@@ -12,4 +12,4 @@ WORKDIR /app
 COPY --from=build /app/target/clothshop-0.0.1-SNAPSHOT.jar clothshop.jar
 EXPOSE 8080 
 
-ENTRYPOINT ["java", "-jar", "your-app.jar"]
+ENTRYPOINT ["java", "-jar", "clothshop.jar"]
