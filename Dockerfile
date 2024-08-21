@@ -9,7 +9,7 @@ RUN mvn clean package -DskipTests
 FROM openjdk:8-jdk-slim
 WORKDIR /app
 
-COPY --from=build /app/target/your-app.jar your-app.jar
+COPY --from=build /app/target/clothshop-0.0.1-SNAPSHOT.jar clothshop.jar
 EXPOSE 8080 
 
 ENTRYPOINT ["java", "-jar", "your-app.jar"]
