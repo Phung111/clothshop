@@ -160,52 +160,6 @@ public class CartAPI {
         }
 
     }
-    
-
-    @PostMapping("/buyNow/{productId}")
-    // @PreAuthorize("hasAnyAuthority('ADMIN','USER')")
-    public ResponseEntity<?> buyNow(@PathVariable Long productId, HttpServletRequest request) {
-
-        Optional<Product> productOptional = iProductService.findById(productId);
-        if (!productOptional.isPresent()) {
-            return new ResponseEntity<>("Product not found with ID: " + productId, HttpStatus.NOT_FOUND);
-        }
-        Product product = productOptional.get();
-
-        try {
-            String jwtToken = jwtService.extractJwtFromRequest(request);
-            Long cartID = jwtService.getCartIdFromJwtToken(jwtToken);
-
-            Optional<Cart> cartOptional = iCartService.findById(cartID);
-            Cart cart = cartOptional.get();
-
-            Boolean isCartItemExist = cartItemRepository.existsByProduct(product);
-            if (isCartItemExist) {
-                Optional<CartItem> cartItemOptional = iCartItemService.findByProductId(productId);
-                CartItem cartItem = cartItemOptional.get();
-                cartItem.setQuantity(cartItem.getQuantity() + 1);
-                cartItem.setTotal(cartItem.getQuantity() * product.getPrice());
-                iCartItemService.save(cartItem);
-            } else {
-                CartItem cartItem = new CartItem();
-                cartItem.setCart(cart);
-                cartItem.setProduct(product);
-                cartItem.setQuantity((long) 1);
-                cartItem.setTotal(product.getPrice());
-                cartItem.setVariation(product.toVariations());
-                iCartItemService.save(cartItem);
-            }
-
-            Optional<Cart> cartOptionalRes = iCartService.findById(cartID);
-            Cart cartRes = cartOptionalRes.get();
-            CartDTO cartDTO = cartRes.toCartDTO();
-
-            return new ResponseEntity<>(cartDTO, HttpStatus.CREATED);
-        } catch (CustomErrorException e) {
-            return new ResponseEntity<>(e.getMessage(), e.getStatus());
-        }
-
-    }
 
     @PostMapping("/increaseCartItem/{cartItemId}")
     @PreAuthorize("hasAnyAuthority('ADMIN','USER')")

@@ -93,7 +93,6 @@ public class ProductService implements IProductService {
             throws NumberFormatException, ParseException {
 
         Product product = productReqDTO.toProduct();
-        product.setSold(0L);
         product.setProductStatus(EProductStatus.AVAIABLE);
 
         product = productRepository.save(product);

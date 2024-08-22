@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -197,12 +198,17 @@ public class ProductReqDTO implements Validator {
             priceTotalSave = priceTotalSave - priceTotalSave*Long.parseLong(percent)/100;
         }
 
+        Long quantityValue = Long.valueOf(quantity);
+        Random random = new Random();
+        Long soldValue = quantityValue * (60 + random.nextInt(101)) / 100; 
+
         return new Product()
                 .setId(id)
                 .setName(name)
                 .setPrice(Long.valueOf(price))
                 .setPriceTotal(priceTotalSave)
                 .setQuantity(Long.valueOf(quantity))
+                .setSold(soldValue)
                 .setDecription(decription)
                 .setCategory(ECategory.valueOf(category))
                 .setColor(EColor.valueOf(color))
