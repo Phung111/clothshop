@@ -32,13 +32,8 @@ public class VoucherCreateReqDTO {
     @NotBlank(message = "dateEnd can not blank")
     private String dateEnd;
 
-    // @NotBlank(message = "percent can not blank")
-    // @Pattern(regexp = "^(0|[1-9][0-9]*)$", message = "percent is not valid number")
-    // @Pattern(regexp = "^(100|[1-9]?[0-9])$", message = "percent must be between 0 and 100")
     private String percent;
 
-    // @NotBlank(message = "price can not blank")
-    // @Pattern(regexp = "^(0|[1-9][0-9]*)$", message = "price product is not valid number")
     private String price;
 
     public Voucher toVoucher() throws ParseException {

@@ -35,6 +35,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import com.phung.clothshop.utils.DateFormat;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -161,13 +163,11 @@ public class ProductReqDTO implements Validator {
         String dateStart = dto.getDateStart();
         String dateEnd = dto.getDateEnd();
         Date now = new Date();
-        // SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z", Locale.ENGLISH);
 
         if (dateStart != null && !dateStart.isEmpty() && dateStart != null && !dateStart.isEmpty()) { 
             try {
-                Date startDate = formatter.parse(dateStart);
-                Date endDate = formatter.parse(dateEnd);
+                Date startDate = DateFormat.parse(dateStart);
+                Date endDate = DateFormat.parse(dateEnd);
     
                 if (endDate.before(now)) {
                     errors.rejectValue("dateEnd", "dateEnd.invalid", "dateEnd must be after today");
@@ -218,19 +218,11 @@ public class ProductReqDTO implements Validator {
 
     }
 
-    // public Discount toDiscount() throws NumberFormatException, ParseException {
-    //     return new Discount()
-    //             .setDateStart(DateFormat.parse(dateStart))
-    //             .setDateEnd(DateFormat.parse(dateEnd))
-    //             .setPercent(Long.valueOf(percent));
-    // }
-
     public Discount toDiscount() throws NumberFormatException, ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
 
         return new Discount()
-                .setDateStart(formatter.parse(dateStart))
-                .setDateEnd(formatter.parse(dateEnd))
+                .setDateStart(DateFormat.parse(dateStart))
+                .setDateEnd(DateFormat.parse(dateEnd))
                 .setPercent(Long.valueOf(percent));
     }
 }
