@@ -125,9 +125,9 @@ public class ProductReqDTO implements Validator {
 
                 if (multipartFile != null && !multipartFile.isEmpty()) {
                     // Kiểm tra kích thước file
-                    if (multipartFile.getSize() > 1024000) {
+                    if (multipartFile.getSize() > 10240000) {
                         
-                        String message = "File size at index " + position + " must be less than 1 MB";
+                        String message = "File size at index " + position + " must be less than 10 MB";
                         errors.rejectValue("multipartFiles[" + i + "]", "file.size", message);
                         
                     }
@@ -161,7 +161,8 @@ public class ProductReqDTO implements Validator {
         String dateStart = dto.getDateStart();
         String dateEnd = dto.getDateEnd();
         Date now = new Date();
-        SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
+        // SimpleDateFormat formatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z", Locale.ENGLISH);
 
         if (dateStart != null && !dateStart.isEmpty() && dateStart != null && !dateStart.isEmpty()) { 
             try {

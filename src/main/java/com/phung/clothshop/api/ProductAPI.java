@@ -94,24 +94,6 @@ public class ProductAPI {
         return new ResponseEntity<>(productResDTO, HttpStatus.OK);
     }
 
-    // @PostMapping("/create")
-    // @PreAuthorize("hasAnyAuthority('ADMIN')")
-    // public ResponseEntity<?> createProduct(
-    //          @Validated ProductCreateReqDTO productCreateReqDTO,
-    //         BindingResult bindingResult) throws NumberFormatException, ParseException {
-        
-    //     if(productCreateReqDTO.getMultipartFiles() != null) {
-    //         validatefiles.validatefiles(productCreateReqDTO.getMultipartFiles(), bindingResult);   
-    //     }
-
-    //     if (bindingResult.hasErrors()) {
-    //         return appUtils.mapErrorToResponse(bindingResult);
-    //     }
-
-    //     ProductResDTO productResDTO = iProductService.saveProductAndImage(productCreateReqDTO);
-
-    //     return new ResponseEntity<>(productResDTO, HttpStatus.CREATED);
-    // }
 
     @PostMapping("/create")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
@@ -130,14 +112,11 @@ public class ProductAPI {
     }
 
     
-
-
-
     @PostMapping("/update/{productID}")
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public ResponseEntity<?> updateProduct(@Validated ProductReqDTO productReqDTO,
-    BindingResult bindingResult,
-    @PathVariable Long productID
+                BindingResult bindingResult,
+                @PathVariable Long productID
             ) throws NumberFormatException, ParseException{
 
         Optional<Product> producOptional = iProductService.findById(productID);

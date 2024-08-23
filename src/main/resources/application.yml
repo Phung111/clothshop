@@ -1,6 +1,6 @@
 spring:
-    datasource:
-        url: jdbc:mysql://root:YoAhebzRrGgfRNKakzDaviBaIYNYqqDm@junction.proxy.rlwy.net:49404/clothshop
-        username: root
-        password: YoAhebzRrGgfRNKakzDaviBaIYNYqqDm
-        driver-class-name: com.mysql.cj.jdbc.Driver
+  datasource:
+    url: jdbc:mysql://root:YoAhebzRrGgfRNKakzDaviBaIYNYqqDm@junction.proxy.rlwy.net:49404/clothshop
+    username: root
+    password: YoAhebzRrGgfRNKakzDaviBaIYNYqqDm
+    driver-class-name: com.mysql.cj.jdbc.Driver
