@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -65,4 +67,27 @@ public class CloudinaryUploader {
         return null; // Trả về null hoặc một giá trị mặc định nếu có lỗi xảy ra
 
     }
+
+    public Map<String, Boolean> deleteMultipleFromCloudinary(List<String> stringIDs) {
+    Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap(
+            "cloud_name", cloudinaryName,
+            "api_key", cloudinaryApiKey,
+            "api_secret", cloudinaryApiSecret));
+
+    Map<String, Boolean> deletionResults = new HashMap<>();
+
+    for (String publicId : stringIDs) {
+        try {
+            Map<?, ?> result = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+            boolean isDeleted = "ok".equals(result.get("result"));
+            deletionResults.put(publicId, isDeleted);
+        } catch (IOException e) {
+            e.printStackTrace(); 
+            deletionResults.put(publicId, false);
+        }
+    }
+
+    return deletionResults;
+}
+
 }

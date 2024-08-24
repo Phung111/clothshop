@@ -142,6 +142,7 @@ public class ProductService implements IProductService {
         MultipartFile[] multipartFiles = productReqDTO.getMultipartFiles();
         if (multipartFiles != null && multipartFiles.length > 0 && !multipartFiles[0].getOriginalFilename().isEmpty()) {
             productImagesNew = iProductImageService.uploadAndSaveImage(product, multipartFiles);
+            iProductImageService.deleteCloudinaryImages(productOld.getImages());
         } else {
             productImagesNew = iProductImageService.setDefaultAndSaveImage(product);
         }

@@ -144,4 +144,13 @@ public class ProductImageService implements IProductImageService {
         productImageRepository.save(productImage);
     }
 
+    @Override
+    public void deleteCloudinaryImages (List<ProductImage> productImages) {
+        List<String> cloudIds = new ArrayList<>();
+        for (ProductImage productImage : productImages) {
+            cloudIds.add(productImage.getCloudId());
+        }
+        cloudinaryUploader.deleteMultipleFromCloudinary(cloudIds);
+    }
+
 }

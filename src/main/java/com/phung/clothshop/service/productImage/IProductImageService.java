@@ -19,4 +19,6 @@ public interface IProductImageService extends IGeneralService<ProductImage, Long
     List<ProductImage> findByProduct_Id(Long productId);
 
     void deleteProductImage(ProductImage productImage);
+
+    void deleteCloudinaryImages (List<ProductImage> productImages);
 }
